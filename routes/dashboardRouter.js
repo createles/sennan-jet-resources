@@ -36,13 +36,25 @@ dashboardRouter.post('/item', upload.single('image'), async (req, res) => {
         // Upload image to Supabase if a file was provided
         if (req.file) {
             const file = req.file;
-            // Create a unique filename to prevent overwrites
-            const fileName = `${Date.now()}-${file.originalname.replace(/\s+/g, '-')}`;
+
+            // Process image buffer with sharp
+            const processedImageBuffer = await sharp(file.buffer)
+                .resize({
+                    width: 1200, // Maximum width
+                    withoutEnlargement: true // Prevent scaling up smaller images
+                })
+                .webp({ quality: 80 }) // Convert to WebP format with 80% quality
+                .toBuffer();
+
+            // Create a unique filename with .webp extension
+            const originalNameWithoutExt = file.originalname.split('.').slice(0, -1).join('.');
+            const fileName = `${Date.now()}-${originalNameWithoutExt.replace(/\s+/g, '-')}.webp`;
             
+            // Upload processed image to Supabase Storage
             const { data, error } = await supabase.storage
                 .from('item-images') // Must match your Supabase bucket name exactly
-                .upload(fileName, file.buffer, {
-                    contentType: file.mimetype
+                .upload(fileName, processedImageBuffer, {
+                    contentType: 'image/webp'
                 });
 
             if (error) throw error;
