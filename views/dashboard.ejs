@@ -179,7 +179,7 @@
             <img src="<%= item.images[0] || 'https://via.placeholder.com/400x300' %>" alt="<%= item.title %>">
             <div class="card-content">
               <span class="status-tag <%= item.status === 'AVAILABLE' ? 'available' : 'reserved' %>">
-                <%= item.status %>
+                <%= item.status === 'AVAILABLE' ? item.status : item.status + ' - ' + item.reserveeName %>
               </span>
               <h4 style="margin: 0.5rem 0;">
                 <%= item.title %>
@@ -197,7 +197,7 @@
                   </form>
                   <% } %>
 
-                    <% if (item.status !=='SOLD' ) { %>
+                    <% if (item.status !== 'SOLD' ) { %>
                       <button type="button" onclick="openEditModal(this.closest('.card'))"
                         style="background:#3182CE; color:white; padding:5px 10px; font-size:0.8rem; border:none; border-radius:4px; cursor:pointer;">
                         Edit
@@ -207,11 +207,14 @@
                           style="background:#F4D35E; color:#2D3748; padding:5px 10px; font-size:0.8rem;">Mark
                           Sold</button>
                       </form>
-                      <% } else { %>
-                        <span
-                          style="background:#A0AEC0; color:white; padding:5px 10px; font-size:0.8rem; border-radius:4px; font-weight:bold;">Item
-                          Sold</span>
-                        <% } %>
+                    <% } else { %>
+                        <form action="/dashboard/item/<%= item.id %>/unsold" method="POST" style="margin: 0;">
+                          <button type="submit"
+                            style="background:#A0AEC0; color:white; padding:5px 10px; font-size:0.8rem; border-radius:4px; font-weight:bold;">
+                            Mark Unsold
+                          </button>
+                        </form>
+                    <% } %>
               </div>
             </div>
           </div>

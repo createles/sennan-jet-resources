@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import multer, { memoryStorage } from 'multer';
+import sharp from 'sharp';
 import { prisma } from '../lib/prisma.js';
 import supabase from '../lib/supabase.js';
 import { authenticateUser } from '../middleware/authMiddleware.js';
@@ -130,6 +131,29 @@ dashboardRouter.post('/item/:id/sold', async (req, res) => {
     }
 });
 
+// POST: Mark Item as Unsold
+dashboardRouter.post('/item/:id/unsold', async (req, res) => {
+    try {
+        // Verify ownership and update status
+        await prisma.item.update({
+            where: {
+                id: req.params.id,
+                userId: req.session.userId // Security check: Ensure the user owns this item
+            },
+            data: {
+                status: 'AVAILABLE',
+                reserveeName: null // Clear reservee name when marking as unsold
+            }
+        });
+        
+        res.redirect('/dashboard');
+    } catch (error) {
+        console.error("Failed to mark item as unsold:", error);
+        res.status(500).send("Error updating item status.");
+    }
+});
+
+// POST: Edit Item Details
 dashboardRouter.post('/item/:id/edit', async (req, res) => {
   const { title, description, price, category, images } = req.body;
 
