@@ -1,0 +1,50 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String   @db.VarChar(255)
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  items     Item[]
+}
+
+model Item {
+  id           String      @id @default(uuid())
+  title        String
+  description  String      @db.Text
+  price        Float
+  category     Category
+  images       String[]
+  status       ItemStatus  @default(AVAILABLE)
+  reserveeName String?
+  userId       String
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+}
+
+enum Category {
+  KITCHEN
+  FURNITURE
+  APPLIANCES
+  CLOTHING
+  BOOKS
+  OTHERS
+}
+
+enum ItemStatus {
+  AVAILABLE
+  RESERVED
+  SOLD
+}

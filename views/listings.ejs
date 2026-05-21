@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>
+    <%= title %>
+  </title>
+  <style>
+    /* Base Sennan City Design System */
+    body {
+      margin: 0;
+      background-color: #F8F9FA;
+      color: #2D3748;
+      font-family: 'Inter', sans-serif;
+    }
+
+    header {
+      background-color: #1A365D;
+      color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header a {
+      color: #F4D35E;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    /* Layout Structure */
+    .container {
+      display: flex;
+      flex-direction: column;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+
+    /* Navigation / Filters */
+    .sidebar {
+      background: white;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      margin-bottom: 1rem;
+      display: flex;
+      overflow-x: auto;
+      gap: 10px;
+      white-space: nowrap;
+    }
+
+    .sidebar a {
+      text-decoration: none;
+      color: #2D3748;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      background: #E2E8F0;
+      font-size: 0.9rem;
+      transition: background 0.2s;
+    }
+
+    .sidebar a.active,
+    .sidebar a:hover {
+      background: #FF6B6B;
+      color: white;
+    }
+
+    /* Grid Layout */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1.5rem;
+      width: 100%;
+    }
+
+    /* Item Cards */
+    .card { 
+        background: white; 
+        border-radius: 8px; 
+        overflow: hidden; 
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+        cursor: pointer; 
+        transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smoother transition */
+        border: 1px solid transparent;
+    }
+
+    .card:hover { 
+        transform: translateY(-6px); 
+        box-shadow: 0 10px 15px rgba(0,0,0,0.15);
+        border-color: #F4D35E; /* Warm Sand accent border on hover */
+    }
+
+    .card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .card-content {
+      padding: 1rem;
+    }
+
+    /* Polished Tag */
+    .tag { 
+        background: #1A365D; 
+        color: white; 
+        font-size: 0.75rem; 
+        padding: 0.3rem 0.6rem; /* Slightly thicker padding */
+        border-radius: 20px; /* Pill shape */
+        display: inline-block; 
+        margin-bottom: 0.5rem; 
+        letter-spacing: 0.5px;
+    }
+
+    .price {
+      color: #FF6B6B;
+      font-weight: bold;
+      font-size: 1.25rem;
+      margin-top: 0.5rem;
+    }
+
+    /* Desktop Breakpoint */
+    @media (min-width: 768px) {
+      .container {
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 2rem;
+      }
+
+      .sidebar {
+        flex-direction: column;
+        width: 200px;
+        margin-bottom: 0;
+        position: sticky;
+        top: 20px;
+        white-space: normal;
+      }
+
+      .sidebar a {
+        border-radius: 4px;
+      }
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background-color: white;
+      padding: 2rem;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 500px;
+      position: relative;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #2D3748;
+    }
+
+    .carousel {
+      position: relative;
+      margin-bottom: 1rem;
+    }
+
+    .carousel img {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+      border-radius: 4px;
+    }
+
+    .carousel-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(26, 54, 93, 0.7);
+      color: white;
+      border: none;
+      padding: 0.5rem;
+      cursor: pointer;
+      border-radius: 50%;
+    }
+
+    .prev-btn {
+      left: 10px;
+    }
+
+    .next-btn {
+      right: 10px;
+    }
+
+    .reserve-form {
+      margin-top: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .reserve-form input {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .reserve-form button {
+      background-color: #FF6B6B;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .tag.reserved {
+      background: #FF6B6B;
+    }
+
+    .card.reserved-card img {
+      filter: grayscale(50%) opacity(0.8);
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h2>JET Marketplace</h2>
+    <nav>
+      <a href="/">Home</a> |
+      <% if(user) { %>
+        <a href="/dashboard">My Dashboard</a>
+        <% } else { %>
+          <a href="/auth/login">Log In</a>
+          <% } %>
+    </nav>
+  </header>
+
+  <div class="container">
+    <aside class="sidebar">
+      <h3 style="margin-top:0; padding-left:0.5rem; display:none;">Categories</h3>
+      <a href="/listings" class="<%= currentCategory === 'ALL' ? 'active' : '' %>">All Items</a>
+      <a href="/listings?category=KITCHEN" class="<%= currentCategory === 'KITCHEN' ? 'active' : '' %>">Kitchen</a>
+      <a href="/listings?category=FURNITURE"
+        class="<%= currentCategory === 'FURNITURE' ? 'active' : '' %>">Furniture</a>
+      <a href="/listings?category=APPLIANCES"
+        class="<%= currentCategory === 'APPLIANCES' ? 'active' : '' %>">Appliances</a>
+      <a href="/listings?category=CLOTHING" class="<%= currentCategory === 'CLOTHING' ? 'active' : '' %>">Clothing</a>
+      <a href="/listings?category=OTHERS" class="<%= currentCategory === 'OTHERS' ? 'active' : '' %>">Others</a>
+    </aside>
+
+    <main class="grid">
+      <% if (items.length> 0) { %>
+        <% items.forEach(item=> { %>
+          <div class="card <%= item.status === 'RESERVED' ? 'reserved-card' : '' %>"
+            data-item="<%= encodeURIComponent(JSON.stringify(item)) %>" onclick="openModal(this)">
+            <img src="<%= item.images[0] || 'https://via.placeholder.com/400x300' %>" alt="<%= item.title %>">
+            <div class="card-content">
+              <span class="tag">
+                <%= item.category %>
+              </span>
+
+              <% if (item.status==='RESERVED' ) { %>
+                <span class="tag reserved">RESERVED for <%= item.reserveeName %></span>
+                <% } %>
+
+                  <h3 style="margin: 0.5rem 0;">
+                    <%= item.title %>
+                  </h3>
+                  <p
+                    style="font-size: 0.9rem; color: #718096; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    <%= item.description %>
+                  </p>
+                  <div class="price">¥<%= item.price.toLocaleString() %>
+                  </div>
+                  <p style="font-size: 0.8rem; margin-top: 10px; color: #A0AEC0;">Seller: <%= item.user.name %>
+                  </p>
+            </div>
+          </div>
+          <% }) %>
+            <% } else { %>
+              <p>No items found in this category.</p>
+              <% } %>
+    </main>
+  </div>
+
+  <div id="itemModal" class="modal-overlay">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal()">&times;</span>
+
+      <div class="carousel">
+        <button class="carousel-btn prev-btn" onclick="changeImage(-1)">&#10094;</button>
+        <img id="modalImage" src="" alt="Item Image">
+        <button class="carousel-btn next-btn" onclick="changeImage(1)">&#10095;</button>
+      </div>
+
+      <span id="modalCategory" class="tag"></span>
+      <h2 id="modalTitle" style="margin-top: 0.5rem;"></h2>
+      <p id="modalDescription"></p>
+      <div class="price" id="modalPrice"></div>
+      <p style="font-size: 0.8rem; color: #A0AEC0;">Seller: <span id="modalSeller"></span></p>
+
+      <form id="reservationForm" class="reserve-form" method="POST" action="">
+        <input type="text" name="reserveeName" placeholder="Enter your full name to reserve" required>
+        <button type="submit">Reserve Item</button>
+      </form>
+    </div>
+  </div>
+  <script>
+    let currentImages = [];
+    let currentImageIndex = 0;
+
+    function openModal(element) {
+      // Parse the item data injected by EJS
+      const itemData = JSON.parse(decodeURIComponent(element.getAttribute('data-item')));
+
+      // Populate text data
+      document.getElementById('modalTitle').innerText = itemData.title;
+      document.getElementById('modalDescription').innerText = itemData.description;
+      document.getElementById('modalPrice').innerText = '¥' + itemData.price.toLocaleString();
+      document.getElementById('modalCategory').innerText = itemData.category;
+      document.getElementById('modalSeller').innerText = itemData.user.name;
+
+      // Set up form action dynamically based on item ID
+      document.getElementById('reservationForm').action = `/listings/${itemData.id}/reserve`;
+
+      // Initialize Carousel
+      currentImages = itemData.images && itemData.images.length > 0
+        ? itemData.images
+        : ['https://via.placeholder.com/400x300']; // Fallback
+
+      currentImageIndex = 0;
+      updateCarouselImage();
+
+      // Show modal
+      document.getElementById('itemModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('itemModal').style.display = 'none';
+    }
+
+    // Carousel Logic
+    function changeImage(direction) {
+      currentImageIndex += direction;
+
+      // Loop around array boundaries
+      if (currentImageIndex < 0) {
+        currentImageIndex = currentImages.length - 1;
+      } else if (currentImageIndex >= currentImages.length) {
+        currentImageIndex = 0;
+      }
+
+      updateCarouselImage();
+    }
+
+    function updateCarouselImage() {
+      document.getElementById('modalImage').src = currentImages[currentImageIndex];
+    }
+
+    // Close modal if user clicks outside of the modal content box
+    window.onclick = function (event) {
+      const modal = document.getElementById('itemModal');
+      if (event.target == modal) {
+        closeModal();
+      }
+    }
+  </script>
+</body>
+
+</html>
