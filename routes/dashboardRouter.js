@@ -154,7 +154,7 @@ dashboardRouter.post('/item/:id/unsold', async (req, res) => {
 });
 
 // POST: Edit Item Details
-router.post('/item/:id/edit', upload.array('newImages'), async (req, res) => {
+dashboardRouter.post('/item/:id/edit', upload.array('newImages'), async (req, res) => {
     const { title, description, price, category } = req.body;
     const itemId = req.params.id;
     
