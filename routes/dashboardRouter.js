@@ -154,29 +154,97 @@ dashboardRouter.post('/item/:id/unsold', async (req, res) => {
 });
 
 // POST: Edit Item Details
-dashboardRouter.post('/item/:id/edit', async (req, res) => {
-  const { title, description, price, category, images } = req.body;
+router.post('/item/:id/edit', upload.array('newImages'), async (req, res) => {
+    const { title, description, price, category } = req.body;
+    const itemId = req.params.id;
+    
+    // Parse the list of images the user decided to keep from the frontend
+    let keptImages = [];
+    if (req.body.existingImages) {
+        keptImages = Array.isArray(req.body.existingImages) 
+            ? req.body.existingImages 
+            : [req.body.existingImages];
+    }
 
-  try {
-    await prisma.item.update({
-      where: {
-        id: req.params.id,
-        userId: req.session.userId
-      },
-      data: {
-        title: title,
-        description: description,
-        price: parseFloat(price),
-        category: category.toUpperCase(),
-        images: images
-      }
-    })
+    try {
+        // FETCH THE CURRENT STATE OF THE ITEM FROM POSTGRESQL
+        const currentItem = await prisma.item.findUnique({
+            where: { id: itemId, userId: req.session.userId }
+        });
 
-    res.redirect('/dashboard');
-  } catch (error) {
-    console.error("Failed to update item:", error);
-    res.status(500).send("Error updating item details.")
-  }
+        if (!currentItem) {
+            return res.status(404).send("Item not found or unauthorized.");
+        }
+
+        // IDENTIFY DISCARDED IMAGES FOR SUPABASE CLEANUP
+        // Filter out public URLs that exist in the database but were omitted by the frontend form
+        const imagesToDelete = currentItem.images.filter(imgUrl => !keptImages.includes(imgUrl));
+
+        if (imagesToDelete.length > 0) {
+            // Extract just the filename from the full public URL string
+            const fileNamesToDelete = imagesToDelete.map(imgUrl => {
+                const parts = imgUrl.split('/');
+                return parts[parts.length - 1];
+            });
+
+            // Trigger the Supabase Storage removal call
+            const { error: storageError } = await supabase.storage
+                .from('item-images')
+                .remove(fileNamesToDelete);
+
+            if (storageError) {
+                console.error("Supabase file deletion warning:", storageError);
+                // We log the error but don't halt the process, ensuring the database update still succeeds
+            }
+        }
+
+        // PROCESS AND UPLOAD ANY NEWLY ADDED IMAGES
+        let finalImages = [...keptImages]; // Start with the images we kept
+
+        if (req.files && req.files.length > 0) {
+            for (const file of req.files) {
+                const processedImageBuffer = await sharp(file.buffer)
+                    .resize({ width: 1200, withoutEnlargement: true })
+                    .webp({ quality: 80 })
+                    .toBuffer();
+
+                const originalNameWithoutExt = file.originalname.split('.').slice(0, -1).join('.');
+                const fileName = `${Date.now()}-${originalNameWithoutExt.replace(/\s+/g, '-')}.webp`;
+                
+                const { error: uploadError } = await supabase.storage
+                    .from('item-images')
+                    .upload(fileName, processedImageBuffer, { contentType: 'image/webp' });
+
+                if (uploadError) throw uploadError;
+
+                const { data: publicUrlData } = supabase.storage
+                    .from('item-images')
+                    .getPublicUrl(fileName);
+                    
+                finalImages.push(publicUrlData.publicUrl);
+            }
+        }
+
+        // UPDATE THE DATABASE WITH THE FINAL OPTIMIZED ARRAY
+        await prisma.item.update({
+            where: {
+                id: itemId,
+                userId: req.session.userId 
+            },
+            data: {
+                title: title,
+                description: description,
+                price: parseFloat(price),
+                category: category.toUpperCase(),
+                images: finalImages // Saves only the active images
+            }
+        });
+
+        res.redirect('/dashboard');
+    } catch (error) {
+        console.error("Failed to update item and manage assets:", error);
+        res.status(500).send("Error updating item details.");
+    }
 });
 
 export default dashboardRouter;
