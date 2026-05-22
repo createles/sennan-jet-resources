@@ -234,7 +234,7 @@
 
       <h3 style="margin-top:0; color:#1A365D;">Edit Listing</h3>
 
-      <form id="editForm" method="POST" action="">
+      <form id="editForm" method="POST" action="" enctype="multipart/form-data">
         <div class="form-group">
           <label>Item Title</label>
           <input type="text" name="title" id="editTitle" required>
@@ -242,6 +242,15 @@
         <div class="form-group">
           <label>Description</label>
           <textarea name="description" id="editDescription" rows="3" required></textarea>
+        </div>
+        <div class="form-group" style="margin-top: 1rem;">
+          <label>Manage Existing Images</label>
+          <div id="editImageContainer" style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px;">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Upload Additional Images (Optional)</label>
+          <input type="file" name="newImages" accept="image/*" multiple>
         </div>
         <div style="display:flex; gap:1rem;">
           <div class="form-group" style="flex:1;">
@@ -267,34 +276,65 @@
 
   <script>
     function openEditModal(cardElement) {
-      // Parse the item data stored on the card
-      const itemData = JSON.parse(decodeURIComponent(cardElement.getAttribute('data-item')));
+        const itemData = JSON.parse(decodeURIComponent(cardElement.getAttribute('data-item')));
+        
+        // Populate standard fields
+        document.getElementById('editTitle').value = itemData.title;
+        document.getElementById('editDescription').value = itemData.description;
+        document.getElementById('editPrice').value = itemData.price;
+        document.getElementById('editCategory').value = itemData.category;
+        document.getElementById('editForm').action = `/dashboard/item/${itemData.id}/edit`;
+        
+        // Handle Existing Images
+        const imageContainer = document.getElementById('editImageContainer');
+        imageContainer.innerHTML = ''; // Clear previous data
+        
+        if (itemData.images && itemData.images.length > 0) {
+            itemData.images.forEach((imgUrl) => {
+                const div = document.createElement('div');
+                div.style = 'position: relative; width: 80px; height: 80px; flex-shrink: 0;';
+                
+                const img = document.createElement('img');
+                img.src = imgUrl;
+                img.style = 'width: 100%; height: 100%; object-fit: cover; border-radius: 4px; border: 1px solid #ccc;';
+                
+                // This hidden input tells the backend to KEEP this image
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = 'existingImages';
+                hiddenInput.value = imgUrl;
+                
+                const removeBtn = document.createElement('button');
+                removeBtn.innerHTML = '&times;';
+                removeBtn.type = 'button';
+                removeBtn.style = 'position: absolute; top: -5px; right: -5px; background: #FF6B6B; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 14px; line-height: 1; padding: 0;';
+                
+                // Removing the div also removes the hidden input, meaning the image won't be saved
+                removeBtn.onclick = () => div.remove(); 
+                
+                div.appendChild(img);
+                div.appendChild(hiddenInput);
+                div.appendChild(removeBtn);
+                imageContainer.appendChild(div);
+            });
+        } else {
+            imageContainer.innerHTML = '<p style="font-size: 0.8rem; color: #718096; margin: 0;">No existing images.</p>';
+        }
 
-      // Populate the form fields with existing data
-      document.getElementById('editTitle').value = itemData.title;
-      document.getElementById('editDescription').value = itemData.description;
-      document.getElementById('editPrice').value = itemData.price;
-      document.getElementById('editCategory').value = itemData.category;
-
-      // Dynamically set the form's action URL to target this specific item
-      document.getElementById('editForm').action = `/dashboard/item/${itemData.id}/edit`;
-
-      // Display the modal
-      document.getElementById('editModal').style.display = 'flex';
+        document.getElementById('editModal').style.display = 'flex';
     }
 
     function closeEditModal() {
-      document.getElementById('editModal').style.display = 'none';
+        document.getElementById('editModal').style.display = 'none';
     }
 
-    // Close modal if user clicks on the dark background overlay
-    window.onclick = function (event) {
-      const modal = document.getElementById('editModal');
-      if (event.target == modal) {
-        closeEditModal();
-      }
+    window.onclick = function(event) {
+        const modal = document.getElementById('editModal');
+        if (event.target == modal) {
+            closeEditModal();
+        }
     }
-  </script>
+</script>
 </body>
 
 </html>
