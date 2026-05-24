@@ -7,6 +7,7 @@ import session from 'express-session';
 import authRouter from './routes/authRouter.js';
 import itemRouter from './routes/itemRouter.js';
 import dashboardRouter from './routes/dashboardRouter.js';
+import indexRouter from './routes/indexRouter.js';
 
 const PORT = process.env.PORT || 3000;
 const __filename = fileURLToPath(import.meta.url);
@@ -41,13 +42,8 @@ app.use('/listings', itemRouter);
 // Dashboard routes
 app.use('/dashboard', dashboardRouter);
 
-// Basic Landing Page Route
-app.get('/', (req, res) => {
-  res.render('index', { 
-    title: 'Sennan City JETs',
-    user: req.session.userId 
-  });
-});
+// Homepage route
+app.use('/', indexRouter);
 
 // Start Server
 app.listen(PORT, () => {
