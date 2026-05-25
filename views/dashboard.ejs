@@ -2,16 +2,79 @@
 <html lang="en">
 <%- include('partials/head', { title: 'My Dashboard | Sennan JETs' }) %>
 <style>
-    .dashboard-container { max-width: 1200px; margin: 3rem auto; padding: 0 1.5rem; flex: 1; position: relative; z-index: 2; box-sizing: border-box; }
+    /* Widened layout to give the split columns breathing room */
+    .dashboard-container { 
+        max-width: 1400px; 
+        margin: 3rem auto; 
+        padding: 0 2rem; 
+        flex: 1; 
+        position: relative; 
+        z-index: 2; 
+        box-sizing: border-box; 
+        width: 100%;
+    }
+
+    /* Split column layout architecture */
+    .dashboard-split-layout {
+        display: flex;
+        flex-direction: column;
+        gap: 3rem;
+    }
+
+    .dashboard-sidebar-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .dashboard-main-panel {
+        flex: 1;
+    }
+
+    /* Sticky control panel for screens wider than 1024px */
+    @media (min-width: 1024px) {
+        .dashboard-split-layout {
+            display: grid;
+            grid-template-columns: 420px 1fr;
+            gap: 4rem;
+            align-items: start;
+        }
+
+        .dashboard-sidebar-panel {
+            position: sticky;
+            top: 110px; /* Aligns neatly below the sticky header */
+            max-height: calc(100vh - 150px);
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+        
+        /* Hide scrollbars inside sticky sidebar for clean look */
+        .dashboard-sidebar-panel::-webkit-scrollbar {
+            display: none;
+        }
+        .dashboard-sidebar-panel {
+            scrollbar-width: none;
+        }
+    }
+
+    /* Common Form Styling */
     .form-group { width: 100%; margin-bottom: 1.5rem; }
     .form-group label { display: block; font-weight: 700; font-size: 0.85rem; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 0.5rem; }
     .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 4px; font-family: var(--font-body); background: rgba(255,255,255,0.8); box-sizing: border-box;}
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: var(--accent); }
+
+    /* Responsive Posting Grid */
+    .grid { 
+        display: grid; 
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+        gap: 2rem; 
+        width: 100%;
+        box-sizing: border-box;
+    }
     
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem; }
-    
-    /* Ensure single column layout behaves cleanly */
-    .card { overflow: hidden; display: flex; flex-direction: column; transition: transform 0.4s ease; padding: 0; box-sizing: border-box; max-width: 100%; width: 100%;}
-    .card:hover { transform: translateY(-5px); }
+    /* Listing Cards */
+    .card { overflow: hidden; display: flex; flex-direction: column; transition: transform 0.4s ease, border-color 0.4s ease; padding: 0; box-sizing: border-box; max-width: 100%; width: 100%;}
+    .card:hover { transform: translateY(-5px); border-color: var(--accent); }
     .card img { width: 100%; height: 200px; object-fit: cover; border-bottom: 1px solid var(--border-color); }
     .card-content { padding: 1.5rem; display: flex; flex-direction: column; flex: 1; box-sizing: border-box; overflow: hidden;}
     .card-content h4, .card-content p { overflow-wrap: break-word; word-wrap: break-word;}
@@ -20,20 +83,25 @@
     
     @media (max-width: 768px) {
         .grid { grid-template-columns: minmax(0, 1fr); max-width: 450px; margin: 0 auto; justify-items: center; }
+        .dashboard-container { padding: 0 1rem; }
     }
 </style>
 <body>
     <%- include('partials/header') %>
     
     <div class="dashboard-container">
-        <!-- Dashboard Header. Log Out button removed as it is now inside partials/header.ejs -->
-        <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 0.8rem; margin-bottom: 2.5rem;">
-            <h1>Member Dashboard</h1>
-            <p style="color: var(--text-secondary); margin-top: 0.5rem;">Manage your active local listings.</p>
+        
+        <div class="dashboard-split-layout">
+            
+            <!-- Left Panel (Headers & Form creation card) -->
+            <div class="dashboard-sidebar-panel">
+                <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem;">
+                    <h1 style="font-size: 2.5rem; font-weight: 400; line-height: 1.1; color: var(--text-primary);">Member Dashboard</h1>
+                    <p style="color: var(--text-secondary); margin-top: 0.5rem; font-size: 1.05rem;">Manage your active local listings.</p>
         </div>
 
-        <div class="glass-panel" style="padding: 2.5rem; margin-bottom: 4rem; box-sizing: border-box; max-width: 100%;">
-            <h3 style="margin-bottom: 1.5rem;">Create New Listing</h3>
+                <div class="glass-panel" style="padding: 2.2rem; box-sizing: border-box; width: 100%;">
+                    <h3 style="margin-bottom: 1.5rem; font-size: 1.3rem;">Create New Listing</h3>
             <form action="/dashboard/item" method="POST" enctype="multipart/form-data">
                 <div class="form-group">
                     <label>Item Title</label>
@@ -47,12 +115,12 @@
                     <label>Contact Via (How should buyers reach you?)</label>
                     <input type="text" name="contactInfo" placeholder="e.g. LINE ID, FB Messenger, Work Email..." required>
                 </div>
-                <div style="display:flex; gap:1.5rem; flex-wrap: wrap;">
-                    <div class="form-group" style="flex:1; min-width: 200px; margin-bottom: 0;">
+                        <div style="display:flex; gap:1.2rem; flex-wrap: wrap;">
+                            <div class="form-group" style="flex:1; min-width: 140px; margin-bottom: 0;">
                         <label>Price (¥)</label>
                         <input type="number" name="price" required>
                     </div>
-                    <div class="form-group" style="flex:1; min-width: 200px; margin-bottom: 0;">
+                            <div class="form-group" style="flex:1; min-width: 140px; margin-bottom: 0;">
                         <label>Category</label>
                         <select name="category">
                             <option value="KITCHEN">Kitchen</option>
@@ -71,6 +139,11 @@
                 <button type="submit" class="btn-primary">Publish Listing</button>
             </form>
         </div>
+            </div>
+
+            <!-- Right Panel (Active Listings display grid) -->
+            <div class="dashboard-main-panel">
+                <h3 style="margin-bottom: 1.8rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem; font-size: 1.5rem;">My Active Postings</h3>
 
         <h3 style="margin-bottom: 1.5rem;">My Active Postings</h3>
         <div class="grid">
@@ -85,7 +158,7 @@
                         <span style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; margin-bottom: 0.5rem; color: <%= item.status === 'AVAILABLE' ? 'var(--accent-success)' : 'var(--accent)' %>">
                             <%= item.status === 'AVAILABLE' ? item.status : 'RESERVED - ' + item.reserveeName %>
                         </span>
-                        <h4 style="font-size: 1.3rem; margin-bottom: 0.5rem;"><%= item.title %></h4>
+                                <h4 style="font-size: 1.3rem; margin-bottom: 0.5rem; color: var(--text-primary);"><%= item.title %></h4>
                         <div style="font-weight: 700; font-size: 1.1rem; color: var(--text-secondary);">¥<%= item.price.toLocaleString() %></div>
 
                         <!-- Attribution inside dashboard defaults to the active user -->
@@ -114,10 +187,13 @@
                 </div>
                 <% }) %>
             <% } else { %>
-                <div class="glass-panel" style="grid-column: 1 / -1; padding: 4rem; text-align: center; border: 1px dashed var(--border-color);">
+                        <div class="glass-panel" style="grid-column: 1 / -1; padding: 4rem; text-align: center; border: 1px dashed var(--border-color); width: 100%; box-sizing: border-box;">
                     <p style="color: var(--text-secondary); font-style: italic;">You haven't posted any items yet.</p>
                 </div>
             <% } %>
+                </div>
+            </div>
+
         </div>
     </div>
 
