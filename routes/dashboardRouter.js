@@ -21,7 +21,10 @@ dashboardRouter.get('/', async (req, res) => {
             where: { userId: req.session.userId },
             orderBy: { createdAt: 'desc' }
         });
-        res.render('dashboard', { title: 'My Dashboard | Sennan JETs', items });
+        res.render('dashboard', { title: 'My Dashboard | Sennan JETs',
+            user: req.session.userId,
+            items
+        });
     } catch (error) {
         console.error(error);
         res.status(500).send("Error loading dashboard");
