@@ -33,7 +33,7 @@ dashboardRouter.get('/', async (req, res) => {
 
 // POST Create new item with Image Upload
 dashboardRouter.post('/item', upload.single('image'), async (req, res) => {
-    const { title, description, price, category } = req.body;
+    const { title, description, price, category, contactInfo } = req.body;
     let imageUrls = [];
 
     try {
@@ -80,6 +80,7 @@ dashboardRouter.post('/item', upload.single('image'), async (req, res) => {
                 price: parseFloat(price),
                 category: category.toUpperCase(),
                 images: imageUrls,
+                contactInfo,
                 userId: req.session.userId
             }
         });
@@ -158,7 +159,7 @@ dashboardRouter.post('/item/:id/unsold', async (req, res) => {
 
 // POST: Edit Item Details
 dashboardRouter.post('/item/:id/edit', upload.array('newImages'), async (req, res) => {
-    const { title, description, price, category } = req.body;
+    const { title, description, price, category, contactInfo } = req.body;
     const itemId = req.params.id;
     
     // Parse the list of images the user decided to keep from the frontend
@@ -239,7 +240,8 @@ dashboardRouter.post('/item/:id/edit', upload.array('newImages'), async (req, re
                 description: description,
                 price: parseFloat(price),
                 category: category.toUpperCase(),
-                images: finalImages // Saves only the active images
+                images: finalImages, // Saves only the active images
+                contactInfo
             }
         });
 

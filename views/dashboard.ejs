@@ -98,99 +98,97 @@
                 <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem;">
                     <h1 style="font-size: 2.5rem; font-weight: 400; line-height: 1.1; color: var(--text-primary);">Member Dashboard</h1>
                     <p style="color: var(--text-secondary); margin-top: 0.5rem; font-size: 1.05rem;">Manage your active local listings.</p>
-        </div>
+                </div>
 
                 <div class="glass-panel" style="padding: 2.2rem; box-sizing: border-box; width: 100%;">
                     <h3 style="margin-bottom: 1.5rem; font-size: 1.3rem;">Create New Listing</h3>
-            <form action="/dashboard/item" method="POST" enctype="multipart/form-data">
-                <div class="form-group">
-                    <label>Item Title</label>
-                    <input type="text" name="title" required>
-                </div>
-                <div class="form-group">
-                    <label>Description</label>
-                    <textarea name="description" rows="3" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Contact Via (How should buyers reach you?)</label>
-                    <input type="text" name="contactInfo" placeholder="e.g. LINE ID, FB Messenger, Work Email..." required>
-                </div>
+                    <form action="/dashboard/item" method="POST" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label>Item Title</label>
+                            <input type="text" name="title" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea name="description" rows="3" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Contact Via (e.g. FB Messenger, Line)</label>
+                            <input type="text" name="contactInfo" placeholder="How buyers can reach you...">
+                        </div>
                         <div style="display:flex; gap:1.2rem; flex-wrap: wrap;">
                             <div class="form-group" style="flex:1; min-width: 140px; margin-bottom: 0;">
-                        <label>Price (¥)</label>
-                        <input type="number" name="price" required>
-                    </div>
+                                <label>Price (¥)</label>
+                                <input type="number" name="price" required>
+                            </div>
                             <div class="form-group" style="flex:1; min-width: 140px; margin-bottom: 0;">
-                        <label>Category</label>
-                        <select name="category">
-                            <option value="KITCHEN">Kitchen</option>
-                            <option value="FURNITURE">Furniture</option>
-                            <option value="APPLIANCES">Appliances</option>
-                            <option value="CLOTHING">Clothing</option>
-                            <option value="BOOKS">Books</option>
-                            <option value="OTHERS">Others</option>
-                        </select>
-                    </div>
+                                <label>Category</label>
+                                <select name="category">
+                                    <option value="KITCHEN">Kitchen</option>
+                                    <option value="FURNITURE">Furniture</option>
+                                    <option value="APPLIANCES">Appliances</option>
+                                    <option value="CLOTHING">Clothing</option>
+                                    <option value="BOOKS">Books</option>
+                                    <option value="OTHERS">Others</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-top: 1.5rem;">
+                            <label>Upload Image</label>
+                            <input type="file" name="image" accept="image/*" required style="padding: 8px;">
+                        </div>
+                        <button type="submit" class="btn-primary" style="width: 100%; padding: 12px;">Publish Listing</button>
+                    </form>
                 </div>
-                <div class="form-group" style="margin-top: 1.5rem;">
-                    <label>Upload Image</label>
-                    <input type="file" name="image" accept="image/*" required style="padding: 8px;">
-                </div>
-                <button type="submit" class="btn-primary">Publish Listing</button>
-            </form>
-        </div>
             </div>
 
             <!-- Right Panel (Active Listings display grid) -->
             <div class="dashboard-main-panel">
                 <h3 style="margin-bottom: 1.8rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem; font-size: 1.5rem;">My Active Postings</h3>
-
-        <h3 style="margin-bottom: 1.5rem;">My Active Postings</h3>
-        <div class="grid">
-            <% if (typeof items != 'undefined' && items.length > 0) { %>
-                <% items.forEach(item => { %>
-                <div class="card glass-panel" data-item="<%= encodeURIComponent(JSON.stringify(item)) %>">
-                    <img src="<%= item.images && item.images[0] ? item.images[0] : 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'300\' viewBox=\'0 0 400 300\'%3E%3Crect width=\'100%25\' height=\'100%25\' fill=\'%23f1f5f9\'/%3E%3Cpath d=\'M150 200 L200 130 L250 180 L280 150 L320 220 Z\' fill=\'%23cbd5e1\'/%3E%3Ccircle cx=\'180\' cy=\'120\' r=\'20\' fill=\'%23cbd5e1\'/%3E%3C/svg%3E' %>" 
-                         alt="<%= item.title %>"
-                         onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'300\' viewBox=\'0 0 400 300\'%3E%3Crect width=\'100%25\' height=\'100%25\' fill=\'%23f1f5f9\'/%3E%3Cpath d=\'M150 200 L200 130 L250 180 L280 150 L320 220 Z\' fill=\'%23cbd5e1\'/%3E%3Ccircle cx=\'180\' cy=\'120\' r=\'20\' fill=\'%23cbd5e1\'/%3E%3C/svg%3E';">
-                    
-                    <div class="card-content">
-                        <span style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; margin-bottom: 0.5rem; color: <%= item.status === 'AVAILABLE' ? 'var(--accent-success)' : 'var(--accent)' %>">
-                            <%= item.status === 'AVAILABLE' ? item.status : 'RESERVED - ' + item.reserveeName %>
-                        </span>
+                
+                <div class="grid">
+                    <% if (typeof items != 'undefined' && items.length > 0) { %>
+                        <% items.forEach(item => { %>
+                        <div class="card glass-panel" data-item="<%= encodeURIComponent(JSON.stringify(item)) %>">
+                            <img src="<%= item.images && item.images[0] ? item.images[0] : 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'300\' viewBox=\'0 0 400 300\'%3E%3Crect width=\'100%25\' height=\'100%25\' fill=\'%23f1f5f9\'/%3E%3Cpath d=\'M150 200 L200 130 L250 180 L280 150 L320 220 Z\' fill=\'%23cbd5e1\'/%3E%3Ccircle cx=\'180\' cy=\'120\' r=\'20\' fill=\'%23cbd5e1\'/%3E%3C/svg%3E' %>" 
+                                 alt="<%= item.title %>"
+                                 onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'300\' viewBox=\'0 0 400 300\'%3E%3Crect width=\'100%25\' height=\'100%25\' fill=\'%23f1f5f9\'/%3E%3Cpath d=\'M150 200 L200 130 L250 180 L280 150 L320 220 Z\' fill=\'%23cbd5e1\'/%3E%3Ccircle cx=\'180\' cy=\'120\' r=\'20\' fill=\'%23cbd5e1\'/%3E%3C/svg%3E';">
+                            
+                            <div class="card-content">
+                                <span style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; margin-bottom: 0.5rem; color: <%= item.status === 'AVAILABLE' ? 'var(--accent-success)' : 'var(--accent)' %>">
+                                    <%= item.status === 'AVAILABLE' ? item.status : 'RESERVED - ' + item.reserveeName %>
+                                </span>
                                 <h4 style="font-size: 1.3rem; margin-bottom: 0.5rem; color: var(--text-primary);"><%= item.title %></h4>
-                        <div style="font-weight: 700; font-size: 1.1rem; color: var(--text-secondary);">¥<%= item.price.toLocaleString() %></div>
+                                <div style="font-weight: 700; font-size: 1.1rem; color: var(--text-secondary);">¥<%= item.price.toLocaleString() %></div>
 
-                        <!-- Attribution inside dashboard defaults to the active user -->
-                        <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.75rem; border-top: 1px solid var(--border-color); padding-top: 0.75rem; margin-bottom: 1.5rem;">
-                            Seller: You
-                        </div>
+                                <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.75rem; border-top: 1px solid var(--border-color); padding-top: 0.75rem; margin-bottom: 1.5rem;">
+                                    Seller: You
+                                </div>
 
-                        <div style="margin-top: auto; display:flex; gap:0.5rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
-                            <% if (item.status === 'RESERVED') { %>
-                                <form action="/dashboard/item/<%= item.id %>/clear" method="POST" style="margin: 0; flex: 1;">
-                                    <button type="submit" class="dashboard-btn" style="background: var(--text-secondary); width: 100%;">Clear</button>
-                                </form>
-                            <% } %>
-                            <% if (item.status !== 'SOLD') { %>
-                                <button type="button" class="dashboard-btn" style="background: var(--text-primary); flex: 1;" onclick="openEditModal(this.closest('.card'))">Edit</button>
-                                <form action="/dashboard/item/<%= item.id %>/sold" method="POST" style="margin: 0; flex: 1;">
-                                    <button type="submit" class="dashboard-btn" style="background: var(--accent); width: 100%;">Mark Sold</button>
-                                </form>
-                            <% } else { %>
-                                <form action="/dashboard/item/<%= item.id %>/unsold" method="POST" style="margin: 0; width: 100%;">
-                                    <button type="submit" class="dashboard-btn" style="background: #A0AEC0; width: 100%;">Mark Unsold</button>
-                                </form>
-                            <% } %>
+                                <div style="margin-top: auto; display:flex; gap:0.5rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+                                    <% if (item.status === 'RESERVED') { %>
+                                        <form action="/dashboard/item/<%= item.id %>/clear" method="POST" style="margin: 0; flex: 1;">
+                                            <button type="submit" class="dashboard-btn" style="background: var(--text-secondary); width: 100%;">Clear</button>
+                                        </form>
+                                    <% } %>
+                                    <% if (item.status !== 'SOLD') { %>
+                                        <button type="button" class="dashboard-btn" style="background: var(--text-primary); flex: 1;" onclick="openEditModal(this.closest('.card'))">Edit</button>
+                                        <form action="/dashboard/item/<%= item.id %>/sold" method="POST" style="margin: 0; flex: 1;">
+                                            <button type="submit" class="dashboard-btn" style="background: var(--accent); width: 100%;">Mark Sold</button>
+                                        </form>
+                                    <% } else { %>
+                                        <form action="/dashboard/item/<%= item.id %>/unsold" method="POST" style="margin: 0; width: 100%;">
+                                            <button type="submit" class="dashboard-btn" style="background: #A0AEC0; width: 100%;">Mark Unsold</button>
+                                        </form>
+                                    <% } %>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <% }) %>
-            <% } else { %>
+                        <% }) %>
+                    <% } else { %>
                         <div class="glass-panel" style="grid-column: 1 / -1; padding: 4rem; text-align: center; border: 1px dashed var(--border-color); width: 100%; box-sizing: border-box;">
-                    <p style="color: var(--text-secondary); font-style: italic;">You haven't posted any items yet.</p>
-                </div>
-            <% } %>
+                            <p style="color: var(--text-secondary); font-style: italic;">You haven't posted any items yet.</p>
+                        </div>
+                    <% } %>
                 </div>
             </div>
 
@@ -216,7 +214,7 @@
                 
                 <div class="form-group">
                     <label>Contact Via (How should buyers reach you?)</label>
-                    <input type="text" name="contactInfo" id="editContactInfo" placeholder="e.g. LINE ID, FB Messenger..." required>
+                    <input type="text" name="contactInfo" id="editContactInfo" placeholder="e.g. LINE ID, FB Messenger...">
                 </div>
                 
                 <div class="form-group">
