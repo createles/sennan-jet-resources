@@ -1,28 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Log In | Sennan JETs </title>
-    <style>
-        body { background-color: #F8F9FA; color: #2D3748; font-family: 'Inter', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
-        h1 { color: #1A365D; text-align: center; }
-        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        button { width: 100%; padding: 10px; background-color: #FF6B6B; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; transition: background 0.3s; }
-        button:hover { background-color: #e05e5e; }
-        .link { display: block; text-align: center; margin-top: 15px; color: #1A365D; text-decoration: none; }
-    </style>
-</head>
+<%- include('partials/head', { title: 'Log In | Sennan JETs' }) %>
+<style>
+    .auth-layout { display: flex; justify-content: center; align-items: center; flex: 1; padding: 2rem; position: relative; z-index: 2; }
+    .auth-card { width: 100%; max-width: 420px; padding: 3rem 2.5rem; text-align: center; box-sizing: border-box; }
+    .form-input { width: 100%; padding: 14px; margin: 10px 0 20px 0; border: 1px solid var(--border-color); border-radius: 4px; font-family: var(--font-body); font-size: 1rem; transition: border-color 0.3s; background: rgba(255,255,255,0.8); box-sizing: border-box; }
+    .form-input:focus { outline: none; border-color: var(--accent); }
+</style>
 <body>
-    <div class="card">
-        <h1>Welcome Back</h1>
-        <form action="/auth/login" method="POST">
-            <input type="email" name="email" placeholder="Email Address" required>
-            <input type="password" name="password" placeholder="Password" required>
-            <button type="submit">Log In</button>
-        </form>
-        <a href="/auth/register" class="link">Don't have an account? Register</a>
+    <%- include('partials/header') %>
+    <div class="auth-layout">
+        <div class="glass-panel auth-card">
+            <h1 style="margin-bottom: 2rem; color: var(--text-primary);">Welcome Back</h1>
+            <form action="/auth/login" method="POST">
+                <input class="form-input" type="email" name="email" placeholder="Email Address" required>
+                <input class="form-input" type="password" name="password" placeholder="Password" required>
+                <button class="btn-primary" type="submit" style="width: 100%; padding: 14px; font-size: 0.9rem;">Log In</button>
+            </form>
+            <a href="/auth/register" style="display: block; margin-top: 20px; color: var(--text-secondary); text-decoration: none; font-weight: 600; transition: color 0.3s;">Don't have an account? <span style="color: var(--accent);">Register</span></a>
+        </div>
     </div>
+    <%- include('partials/footer') %>
 </body>
 </html>

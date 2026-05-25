@@ -1,468 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title %></title>
-    
-    <!-- Sophisticated Font Pairing -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Plus+Jakarta+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    
-    <style>
-        /* Sleek Modern Variables */
-        :root {
-            --bg-base: #FAFAFA;
-            --bg-surface: #FFFFFF;
-            --text-primary: #1A202C;
-            --text-secondary: #4A5568;
-            --accent: #FF6B6B; /* Default Coral, changes on scroll */
-            --border-color: #E2E8F0;
-            --font-head: 'Outfit', sans-serif;
-            --font-body: 'Plus Jakarta Sans', sans-serif;
-        }
-
-        body { 
-            margin: 0; 
-            font-family: var(--font-body); 
-            color: var(--text-primary);
-            background-color: var(--bg-base);
-            overflow-x: hidden;
-        }
-
-        h1, h2, h3 { font-family: var(--font-head); margin: 0; }
-
-        /* Smooth transitions for elements that use the shifting --accent variable */
-        .btn-primary:hover, .view-all:hover, .item-price, .item-tag, .nav-links a:hover, .item-card-horizontal:hover, .instagram-card:hover {
-            transition: color 0.5s ease, background-color 0.5s ease, border-color 0.5s ease, transform 0.4s ease, box-shadow 0.4s ease;
-        }
-
-        /* The Sennan City Watermark */
-        .bg-watermark {
-            position: fixed;
-            bottom: -2%;
-            left: -2%;
-            width: 25vw;
-            height: 25vw;
-            background-image: url('/images/Emblem_of_Sennan,_Osaka.png');
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: bottom left;
-            opacity: 0.1; /* Extremely subtle */
-            /* image-rendering: optimizeQuality; */
-            filter: blur(5px);
-            z-index: -1;
-            pointer-events: none;
-        }
-
-        /* Sleek Header (Inspired by Fondation des États-Unis) */
-        header { 
-            background: var(--bg-surface);
-            padding: 1.5rem 3rem; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            border-bottom: 1px solid var(--border-color);
-            transition: padding 0.4s ease, background-color 0.4s ease;
-        }
-        
-        /* Shrunk header state on scroll */
-        header.scrolled {
-            padding: 0.8rem 3rem;
-            background-color: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-        }
-
-        .nav-logo {
-            display: flex;
-            align-items: center;
-            gap: 1.2rem;
-            text-decoration: none;
-        }
-        .nav-logo img { height: 38px; width: auto; object-fit: contain; }
-        
-        /* Minimalist Vertical Separator Line */
-        .nav-separator {
-            width: 1px;
-            height: 24px;
-            background-color: var(--border-color);
-        }
-
-        .nav-identity {
-            font-family: var(--font-head);
-            font-weight: 600;
-            font-size: 1.2rem;
-            color: var(--text-primary);
-            letter-spacing: 0.8px;
-            margin: 0;
-        }
-
-        .nav-links { display: flex; gap: 2.5rem; align-items: center; }
-        .nav-links a { 
-            color: var(--text-primary); 
-            text-decoration: none; 
-            font-weight: 700; 
-            font-size: 0.85rem;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-        .nav-links a:hover { color: var(--accent); }
-        
-        .btn-primary {
-            background: var(--text-primary);
-            color: white !important;
-            padding: 0.6rem 1.6rem;
-            border-radius: 4px;
-            border: 1px solid var(--text-primary);
-            cursor: pointer;
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            letter-spacing: 1px;
-        }
-        .btn-primary:hover { 
-            background: var(--accent); 
-            border-color: var(--accent);
-        }
-
-        /* Hero Slideshow Banner */
-        .hero-banner {
-            position: relative;
-            width: 100%;
-            height: 60vh;
-            min-height: 400px;
-            background-color: #000;
-            overflow: hidden;
-        }
-        .slide {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-size: cover;
-            background-position: center;
-            opacity: 0;
-            transition: opacity 1.5s ease-in-out;
-        }
-        .slide.active { opacity: 0.6; }
-        
-        .hero-content {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            color: white;
-            z-index: 10;
-            width: 90%;
-            max-width: 800px;
-        }
-        .hero-content h1 {
-            font-size: 3.8rem;
-            font-weight: 400;
-            letter-spacing: 1px;
-            margin-bottom: 1.2rem;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-        }
-        .hero-content p {
-            font-size: 1.25rem;
-            font-weight: 300;
-            letter-spacing: 0.5px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-        }
-
-        /* Main Container */
-        .container { max-width: 1000px; margin: 4.5rem auto; padding: 0 1.5rem; }
-
-        /* Section Titles */
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 1.2rem;
-            margin-bottom: 2.2rem;
-        }
-        .section-header h2 { font-size: 2.3rem; font-weight: 400; }
-        .view-all { 
-            color: var(--text-secondary); 
-            text-decoration: none; 
-            font-weight: 700;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .view-all:hover { color: var(--accent); }
-
-        /* Vertical Scroll Marketplace Preview */
-        .preview-section { margin-bottom: 6rem; }
-        
-        .vertical-preview-container {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-            /* 490px perfectly fits exactly 2 items and exposes a 30px slice of the 3rd to tease scrolling */
-            max-height: 490px; 
-            overflow-y: auto;
-            padding-right: 1.2rem;
-            scrollbar-width: thin;
-        }
-        .vertical-preview-container::-webkit-scrollbar { width: 5px; }
-        .vertical-preview-container::-webkit-scrollbar-track { background: transparent; }
-        .vertical-preview-container::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
-
-        /* Horizontal Item Card Structure */
-        .item-card-horizontal {
-            display: flex;
-            flex-direction: row;
-            background: var(--bg-surface);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            text-decoration: none;
-            color: inherit;
-            height: 220px; 
-            flex-shrink: 0;
-        }
-        .item-card-horizontal:hover { 
-            transform: translateY(-3px); 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
-            border-color: var(--accent);
-        }
-        .item-card-horizontal img {
-            width: 40%;
-            min-width: 250px;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 4px 0 0 4px;
-        }
-        .card-body { 
-            padding: 2rem; 
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            width: 100%;
-        }
-        .item-tag { 
-            color: var(--accent); 
-            font-size: 0.75rem; 
-            text-transform: uppercase;
-            letter-spacing: 1.2px;
-            font-weight: 700;
-            display: block;
-            margin-bottom: 0.5rem;
-        }
-        .item-title {
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-        }
-        .item-desc {
-            font-size: 0.95rem;
-            color: var(--text-secondary);
-            margin-bottom: 1rem;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;  
-            overflow: hidden;
-        }
-        .item-price { 
-            color: var(--text-primary); 
-            font-weight: 700; 
-            font-size: 1.25rem; 
-            margin-top: auto;
-        }
-
-        /* Instagram Feed Section */
-        .guide-section { margin-bottom: 6rem; }
-        
-        .instagram-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1.5rem;
-        }
-
-        .instagram-card {
-            background: var(--bg-surface);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            overflow: hidden;
-            text-decoration: none;
-            color: inherit;
-            display: flex;
-            flex-direction: column;
-            transition: transform 0.4s ease, border-color 0.4s ease;
-        }
-        
-        .instagram-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--accent);
-        }
-
-        .ig-card-header {
-            padding: 0.8rem 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .ig-profile-info {
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-        }
-
-        .ig-avatar {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 1px solid var(--border-color);
-        }
-
-        .ig-username {
-            font-size: 0.75rem;
-            font-weight: 700;
-            letter-spacing: 0.2px;
-        }
-
-        .ig-follow-btn {
-            font-size: 0.7rem;
-            color: var(--accent);
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .ig-image-container {
-            position: relative;
-            width: 100%;
-            padding-top: 100%; /* Perfect 1:1 Instagram Square */
-            overflow: hidden;
-        }
-
-        .ig-image-container img {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            object-fit: cover;
-            transition: transform 0.4s ease;
-        }
-
-        .instagram-card:hover .ig-image-container img {
-            transform: scale(1.04);
-        }
-
-        .ig-overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.4);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            color: white;
-            font-size: 0.9rem;
-            font-weight: 700;
-            gap: 1rem;
-        }
-
-        .instagram-card:hover .ig-overlay {
-            opacity: 1;
-        }
-
-        /* Sennan Events Section */
-        .sennan-events {
-            margin-top: 2rem;
-            position: relative;
-            border-radius: 4px;
-            overflow: hidden;
-            border: 10px solid var(--border-color);
-            background: var(--bg-surface);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
-            margin-top: 2rem;
-            padding: 10px;
-        }
-        .sennan-events iframe {
-            width: 100%;
-            height: 500px;
-            border: none;
-        }
-
-        /* Canva Embed Section */
-        .community-section { margin-bottom: 6rem; }
-        .canva-wrapper {
-            position: relative;
-            padding-top: 56.25%; /* 16:9 Aspect Ratio */
-            border-radius: 4px;
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-            background: var(--bg-surface);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
-            margin-top: 2rem;
-        }
-        .canva-wrapper iframe {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            border: none;
-        }
-
-        /* Footer */
-        footer {
-            /* background: var(--bg-surface); */
-            /* border-top: 1px solid var(--border-color); */
-            padding: 4rem 2rem;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1.5rem;
-        }
-        .footer-logo img { height: 60px; width: auto; opacity: 0.6; filter: grayscale(100%); transition: filter 0.3s; }
-        .footer-logo img:hover { filter: grayscale(0%); opacity: 1; }
-        .footer-text { font-size: 0.85rem; color: var(--text-secondary); letter-spacing: 0.5px; }
-
-        /* Mobile Adjustments */
-        @media (max-width: 768px) {
-            header { flex-direction: column; padding: 1.2rem; gap: 1rem; }
-            header.scrolled { padding: 1.2rem; }
-            .hero-content h1 { font-size: 2.6rem; }
-            .bg-watermark { width: 120vw; height: 120vw; bottom: 0; left: -20%; }
-            .item-card-horizontal { flex-direction: column; height: auto; }
-            .item-card-horizontal img { width: 100%; min-width: 100%; height: 200px; border-radius: 4px 4px 0 0; }
-            .vertical-preview-container { max-height: 500px; }
-            .instagram-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
-        }
-        @media (max-width: 480px) {
-            .instagram-grid { grid-template-columns: 1fr; }
-        }
-    </style>
-</head>
+<%- include('partials/head', { title: typeof title != 'undefined' ? title : 'Welcome to Sennan JETs' }) %>
 <body>
+    <%- include('partials/header') %>
 
-    <!-- The 65% Background Watermark -->
-    <div class="bg-watermark"></div>
-
-    <!-- Top Navigation -->
-    <header id="main-header">
-        <a href="/" class="nav-logo">
-            <img src="/images/Sennan_and_Kumajiro.png" alt="Sennan City and Kumajiro">
-            <div class="nav-separator"></div>
-            <span class="nav-identity">Sennan City JETs</span>
-        </a>
-        <nav class="nav-links">
-            <a href="/listings">Marketplace</a>
-            <% if(user) { %>
-                <a href="/dashboard" class="btn-primary">Dashboard</a>
-            <% } else { %>
-                <a href="/auth/login" class="btn-primary">Log In</a>
-            <% } %>
-        </nav>
-    </header>
-
-    <!-- Hero Banner (Color Shifting Segment 1) -->
-    <section class="hero-banner section-target" data-theme="#FF6B6B">
+    <section class="hero-banner">
         <div class="slide active" style="background-image: url('/images/chokeji.jpeg');"></div>
         <div class="slide" style="background-image: url('/images/longpark.png');"></div>
         <div class="slide" style="background-image: url('/images/rinshoji.jpg');"></div>
@@ -470,111 +12,107 @@
         
         <div class="hero-content">
             <h1>Welcome to Sennan</h1>
-            <p>Your curated local hub for resource sharing, guides, and community marketplace.</p>
+            <p>Your local resource for everything Sennan and JET.</p>
         </div>
     </section>
 
     <div class="container">
         
-        <!-- Teasing Vertical Marketplace Preview (Color Shifting Segment 2) -->
         <section class="preview-section section-target" data-theme="#F4D35E">
             <div class="section-header">
                 <h2>Marketplace Highlights</h2>
                 <a href="/listings" class="view-all">View Collection &rarr;</a>
             </div>
-
             <p style="color: var(--text-secondary); margin-bottom: 2rem; text-align: center; font-style: italic;"> From furniture, appliances, and even bicycles, find what you need or list items looking for a new home!</p>
 
             <div class="vertical-preview-container">
-                <% if (items && items.length > 0) { %>
+                <% if (typeof items != 'undefined' && items.length > 0) { %>
                     <% items.forEach(item => { %>
                         <a href="/listings" class="item-card-horizontal">
-                            <img src="<%= item.images[0] || 'https://via.placeholder.com/400x300' %>" alt="<%= item.title %>">
+                            <!-- Robust Placeholder Integration -->
+                            <img src="<%= item.images && item.images[0] ? item.images[0] : 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'300\' viewBox=\'0 0 400 300\'%3E%3Crect width=\'100%25\' height=\'100%25\' fill=\'%23f1f5f9\'/%3E%3Cpath d=\'M150 200 L200 130 L250 180 L280 150 L320 220 Z\' fill=\'%23cbd5e1\'/%3E%3Ccircle cx=\'180\' cy=\'120\' r=\'20\' fill=\'%23cbd5e1\'/%3E%3C/svg%3E' %>" 
+                                 alt="<%= item.title %>"
+                                 onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'300\' viewBox=\'0 0 400 300\'%3E%3Crect width=\'100%25\' height=\'100%25\' fill=\'%23f1f5f9\'/%3E%3Cpath d=\'M150 200 L200 130 L250 180 L280 150 L320 220 Z\' fill=\'%23cbd5e1\'/%3E%3Ccircle cx=\'180\' cy=\'120\' r=\'20\' fill=\'%23cbd5e1\'/%3E%3C/svg%3E';">
+                            
                             <div class="card-body">
-                                <span class="item-tag"><%= item.category %></span>
-                                <h3 class="item-title"><%= item.title %></h3>
-                                <p class="item-desc"><%= item.description %></p>
-                                <div class="item-price">¥<%= item.price.toLocaleString() %></div>
+                                <span style="color: var(--accent); font-size: 0.75rem; text-transform: uppercase; font-weight: 700; margin-bottom: 0.5rem;"><%= item.category %></span>
+                                <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem;"><%= item.title %></h3>
+                                <p class="item-desc" style="font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 1rem;"><%= item.description %></p>
+                                <div style="color: var(--text-primary); font-weight: 700; font-size: 1.25rem; margin-top: auto;">¥<%= item.price.toLocaleString() %></div>
+                                
+                                <!-- Seller Display inside preview panel -->
+                                <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.75rem; border-top: 1px solid var(--border-color); padding-top: 0.75rem;">
+                                    Seller: <%= item.user ? item.user.name : 'Unknown' %>
+                                </div>
                             </div>
                         </a>
                     <% }) %>
                 <% } else { %>
-                    <div style="padding: 3rem; width: 100%; text-align: center; border: 1px dashed var(--border-color); border-radius: 4px; background: var(--bg-surface);">
+                    <div class="glass-panel" style="padding: 3rem; text-align: center; border: 1px dashed var(--border-color);">
                         <p style="color: var(--text-secondary); font-style: italic;">The collection is currently empty. Check back soon.</p>
                     </div>
                 <% } %>
             </div>
-
-            <p style="color: var(--text-secondary); margin-top: 2rem; text-align: center; font-style: italic;">Want to list your own items? Log in <a href="/auth/login" style="color: var(--accent); text-decoration: underline;">here</a> to get started.</p>
         </section>
+        <p style="color: var(--text-secondary); margin-bottom: 2rem; text-align: center; font-style: italic;">Want to list your own items? <a href="/login">Log in</a> to get started.</p>
 
-        <!-- Dynamic Social Grid: Sennan Social Feed (Color Shifting Segment 3) -->
         <section class="guide-section section-target" data-theme="#F48498">
             <div class="section-header">
                 <h2>Local Guides & Vibe</h2>
             </div>
             
-            <p class="view-all" style="text-align: center; margin-top: 0;">Curated Instagram Feeds</p>
-            <!-- Elfsight Instagram Feed | Untitled Instagram Feed -->
-            <script src="https://elfsightcdn.com/platform.js" async></script>
-            <div class="elfsight-app-f38add33-8906-49b0-adfa-86302258a886" data-elfsight-app-lazy></div>
-
-            <p class="view-all" style="text-align: center; margin-top: 0;">Sennan Events</p>
-            <div class="sennan-events">
-                <iframe loading="lazy" 
-                        src="https://welcome-sennan.com/events" 
-                        allowfullscreen="allowfullscreen" allow="fullscreen">
-                </iframe>
+            <p class="view-all" style="text-align: center; margin-bottom: 1rem; display: block;">Curated Instagram Feeds</p>
+            
+            <div style="width: 100%; overflow: hidden; box-sizing: border-box; border-radius: 8px;">
+                <script src="https://elfsightcdn.com/platform.js" async></script>
+                <div class="elfsight-app-f38add33-8906-49b0-adfa-86302258a886" data-elfsight-app-lazy></div>
             </div>
         </section>
 
-        <!-- Informational / Canva Embed Section (Color Shifting Segment 4) -->
         <section class="community-section section-target" data-theme="#88D49E">
             <div class="section-header">
                 <h2>Community Resources</h2>
             </div>
-            <h3 style="margin-top: 2.5rem; text-align: center;">Your Go-To Guide for Thriving in Sennan</h2>
-            <div class="canva-wrapper">
-                <!-- <iframe loading="lazy" 
-                        src="https://www.canva.com/design/DAF-Placeholder/view?embed" 
-                        allowfullscreen="allowfullscreen" allow="fullscreen">
-                </iframe> -->
-                <iframe loading="lazy"
-                    src="https://www.canva.com/design/DAGrzm5vBg8/YsOapJg3baFVjBfF1chthw/view?embed"
-                    allowfullscreen="allowfullscreen" allow="fullscreen">
-                </iframe>
-            </div>
-            <h5 style="margin-top: 1.5rem; text-align: center; color: var(--text-secondary); font-style: italic;"> Sennan JET Infobook by Stephanie Beatrice Eseteves</h5>
+            <h3 style="text-align: center;">Your Go-To Guide for Thriving in Sennan</h3>
             
-            <h3 style="margin-top: 2.5rem; text-align: center;">Helpful Links</h3>
-            <h4 style="margin-top: 1.5rem; text-align: left;">JET Materials</h4>
-            <ul style="margin-top: 1.5rem; color: var(--text-secondary); list-style: disc; padding-left: 1.5rem;">
-                <li><a href="https://jetprogramme.org/en/download/#:~:text=Insurance%20Policy%20Guide-,General%20Information%20Handbook,-(GIH)" style="color: var(--accent); text-decoration: underline;">JET Program Handbook</a></li>
-                <li><a href="https://www.altopedia.net/" style="color: var(--accent); text-decoration: underline;">Altopedia: ALT-shared lesson plans and activities</a></li>
-            </ul>
-            <h4 style="margin-top: 1.5rem; text-align: left;">Monthly Kyuushoku Menu </h4>
-            <ul style="margin-top: 1.5rem; color: var(--text-secondary); list-style: disc; padding-left: 1.5rem;">
-                <li><a href="https://www.city.sennan.lg.jp/kakuka/kyouiku/kyouiku_soumu/kyushoku/about/7349.html#:~:text=%E6%94%AF%E6%8F%B4%E8%A3%9C%E5%8A%A9%E9%87%91%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6-,%E7%8C%AE%E7%AB%8B,-%E3%83%BB%E3%82%A2%E3%83%AC%E3%83%AB%E3%82%AE%E3%83%BC%E8%A1%A8" style="color: var(--accent); text-decoration: underline;">Elementary School Kyuushoku Menu</a></li>
-                <li><a href="https://www.city.sennan.lg.jp/kakuka/kyouiku/kyouiku_soumu/kyushoku/about/7384.html#:~:text=%E5%B0%8F%E5%AD%A6%E6%A0%A1%E7%B5%A6%E9%A3%9F%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6-,%E3%81%93%E3%81%AE%E8%A8\x9D%E4%BA\x8B,-%E3%81\xAB%E9\x96\xA2%E3\x81\x99%E3\x82\x8B%E3\x81\xA2\u0000" style="color: var(--accent); text-decoration: underline;">Middle School Kyuushoku Menu</a></li>
-            </ul>
+            <div class="community-grid">
+                
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <div class="pamphlet-wrapper">
+                        <iframe loading="lazy" src="https://www.canva.com/design/DAGrzm5vBg8/YsOapJg3baFVjBfF1chthw/view?embed" allowfullscreen="allowfullscreen" allow="fullscreen"></iframe>
+                    </div>
+                    <h5 style="margin-top: 1.5rem; color: var(--text-secondary); font-style: italic; text-align: center;"> 
+                        Sennan JET Infobook by Stephanie Beatrice Eseteves
+                    </h5>
+                </div>
+
+                <div class="glass-panel" style="padding: 2.5rem; height: fit-content; box-sizing: border-box; width: 100%;">
+                    <h3 style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">Helpful Links</h3>
+                    
+                    <h4 style="margin-top: 1.5rem; color: var(--text-primary);">JET Materials</h4>
+                    <ul style="margin-top: 1rem; color: var(--text-secondary); list-style: square; padding-left: 1.5rem;">
+                        <li style="margin-bottom: 0.5rem;"><a href="https://jetprogramme.org/en/download/" style="color: var(--accent); text-decoration: none; font-weight: 500;">JET Program Handbook</a></li>
+                        <li><a href="https://www.altopedia.net/" style="color: var(--accent); text-decoration: none; font-weight: 500;">Altopedia Shared Resources</a></li>
+                    </ul>
+
+                    <h4 style="margin-top: 2rem; color: var(--text-primary);">Monthly Kyuushoku Menu</h4>
+                    <ul style="margin-top: 1rem; color: var(--text-secondary); list-style: square; padding-left: 1.5rem;">
+                        <li style="margin-bottom: 0.5rem;"><a href="https://www.city.sennan.lg.jp/kakuka/kyouiku/kyouiku_soumu/kyushoku/about/7349.html" style="color: var(--accent); text-decoration: none; font-weight: 500;">Elementary School Menu</a></li>
+                        <li><a href="https://www.city.sennan.lg.jp/kakuka/kyouiku/kyouiku_soumu/kyushoku/about/7384.html" style="color: var(--accent); text-decoration: none; font-weight: 500;">Middle School Menu</a></li>
+                    </ul>
+
+                    <h4 style="margin-top: 2rem; color: var(--text-primary);">Sennan Events</h4>
+                    <a href="https://welcome-sennan.com/events" target="_blank" class="btn-primary" style="margin-top: 1rem; display: block; text-align: center;">View City Calendar</a>
+                </div>
+            </div>
         </section>
 
     </div>
 
-    <!-- Footer -->
-    <footer>
-        <div class="footer-logo">
-            <img src="/images/Emblem_of_Sennan,_Osaka.png" alt="Sennan City Emblem">
-        </div>
-        <div class="footer-text">
-            &copy; <%= new Date().getFullYear() %> Sennan JET Community Resource Site. All rights reserved.
-        </div>
-    </footer>
+    <%- include('partials/footer') %>
 
-    <!-- Interactivity Javascript -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // 1. Hero Slideshow Logic
             const slides = document.querySelectorAll('.slide');
             let currentSlide = 0;
             setInterval(() => {
@@ -583,26 +121,9 @@
                 slides[currentSlide].classList.add('active');
             }, 5000); 
 
-            // 2. Header Shrink on Scroll
-            const header = document.getElementById('main-header');
-            window.addEventListener('scroll', () => {
-                if (window.scrollY > 50) {
-                    header.classList.add('scrolled');
-                } else {
-                    header.classList.remove('scrolled');
-                }
-            });
-
-            // 3. Changing Accent Colors on Scroll
+            // Dynamic Accent Color scroll spy
             const root = document.documentElement;
             const sections = document.querySelectorAll('.section-target');
-            
-            const observerOptions = {
-                root: null,
-                rootMargin: '0px',
-                threshold: 0.35 // Triggers when 35% of the section is visible
-            };
-
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
@@ -610,8 +131,7 @@
                         root.style.setProperty('--accent', newColor);
                     }
                 });
-            }, observerOptions);
-
+            }, { root: null, rootMargin: '0px', threshold: 0.35 });
             sections.forEach(section => observer.observe(section));
         });
     </script>

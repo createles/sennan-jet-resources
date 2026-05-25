@@ -1,498 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title %></title>
+<%- include('partials/head', { title: typeof title != 'undefined' ? title : 'Marketplace | Sennan JETs' }) %>
+<style>
+    /* WIDENED SPREAD: max-width increased to 1400px */
+    .marketplace-wrapper { max-width: 1400px; margin: 3rem auto; padding: 0 2rem; display: flex; flex-direction: column; gap: 2.5rem; flex: 1; position: relative; z-index: 2; box-sizing: border-box; width: 100%;}
+    .marketplace-layout { display: flex; flex-direction: column; gap: 2rem; }
     
-    <!-- Modern Sophisticated Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Plus+Jakarta+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+    /* DISCRETE SCROLLBAR: Styled horizontal bar exclusively for mobile filter layout */
+    .sidebar { display: flex; overflow-x: auto; gap: 0.75rem; white-space: nowrap; padding: 1rem; border-radius: 8px; scrollbar-width: thin; scrollbar-color: rgba(255, 107, 107, 0.4) transparent;}
+    .sidebar::-webkit-scrollbar { height: 6px; display: block; }
+    .sidebar::-webkit-scrollbar-track { background: rgba(0,0,0,0.03); border-radius: 8px; }
+    .sidebar::-webkit-scrollbar-thumb { background: rgba(255, 107, 107, 0.4); border-radius: 8px; }
+
+    .sidebar h3 { display: none; font-size: 1.2rem; text-transform: uppercase; margin-bottom: 1rem; }
+    .sidebar a { text-decoration: none; color: var(--text-secondary); font-size: 0.85rem; font-weight: 700; text-transform: uppercase; padding: 0.8rem 1.2rem; border-radius: 4px; border: 1px solid var(--border-color); transition: all 0.3s ease; }
+    .sidebar a.active, .sidebar a:hover { color: white; background: var(--text-primary); border-color: var(--text-primary); }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem; width: 100%; box-sizing: border-box;}
     
-    <style>
-        :root {
-            --bg-base: #FAFAFA;
-            --bg-surface: #FFFFFF;
-            --text-primary: #1A202C;
-            --text-secondary: #4A5568;
-            --accent: #FF6B6B; /* Sunset Coral */
-            --border-color: #E2E8F0;
-            --font-head: 'Outfit', sans-serif;
-            --font-body: 'Plus Jakarta Sans', sans-serif;
-        }
+    /* Single Column Mobile Safety */
+    .card { overflow: hidden; display: flex; flex-direction: column; cursor: pointer; transition: transform 0.4s ease, border-color 0.4s ease; padding: 0; box-sizing: border-box; max-width: 100%; width: 100%;}
+    .card:hover { transform: translateY(-5px); border-color: var(--accent); }
+    .card img { width: 100%; height: 220px; object-fit: cover; border-bottom: 1px solid var(--border-color); }
+    .card-content { padding: 1.5rem; display: flex; flex-direction: column; flex: 1; box-sizing: border-box; overflow: hidden;}
+    .card-content p, .card-content h3 { overflow-wrap: break-word; word-wrap: break-word;}
+    .card.reserved-card img { filter: grayscale(40%) opacity(0.8); }
 
-        body { 
-            margin: 0; 
-            font-family: var(--font-body); 
-            color: var(--text-primary);
-            background-color: var(--bg-base);
-            overflow-x: hidden;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
+    /* MODAL OVERFLOW FIX: Restricting size strictly to viewport */
+    .modal-overlay { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); justify-content: center; align-items: center; opacity: 0; transition: opacity 0.4s ease; backdrop-filter: blur(5px); }
+    .modal-overlay.active { opacity: 1; }
+    .modal-content { padding: 2.5rem; width: 90vw; max-width: 550px; position: relative; max-height: 90vh; overflow-y: auto; overflow-x: hidden; transform: translateY(20px); transition: transform 0.4s ease; box-sizing: border-box;}
+    .modal-overlay.active .modal-content { transform: translateY(0); }
+    .close-btn { position: absolute; top: 1.2rem; right: 1.5rem; font-size: 1.8rem; cursor: pointer; color: var(--text-secondary); transition: color 0.3s; }
+    .close-btn:hover { color: var(--accent); }
+    
+    .carousel { position: relative; margin-bottom: 1.5rem; background-color: #F1F5F9; border-radius: 4px; overflow: hidden; border: 1px solid var(--border-color); }
+    .carousel img { width: 100%; height: 320px; object-fit: contain; display: block; }
+    .carousel-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(26, 32, 44, 0.8); color: white; border: none; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 50%; transition: background-color 0.3s; }
+    .carousel-btn:hover { background-color: var(--accent); }
 
-        h1, h2, h3, h4 { font-family: var(--font-head); margin: 0; }
+    .reserve-form { margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.8rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem; }
+    .reserve-form input { padding: 0.8rem; border: 1px solid var(--border-color); border-radius: 4px; font-family: var(--font-body); box-sizing: border-box;}
 
-        /* The Sennan City Watermark */
-        .bg-watermark {
-            position: fixed;
-            bottom: -5%;
-            left: -10%;
-            width: 65vw;
-            height: 65vw;
-            background-image: url('/images/Emblem_of_Sennan,_Osaka.png');
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: bottom left;
-            opacity: 0.03;
-            z-index: -1;
-            pointer-events: none;
-        }
+    @media (min-width: 768px) {
+        .marketplace-layout { flex-direction: row; align-items: flex-start; gap: 3rem; }
+        .sidebar { flex-direction: column; width: 240px; position: sticky; top: 100px; white-space: normal; flex-shrink: 0; scrollbar-width: none; }
+        .sidebar::-webkit-scrollbar { display: none; } /* hide scrollbar on desktop */
+        .sidebar h3 { display: block; }
+        .sidebar a { border-color: transparent; }
+    }
 
-        /* Header (Matching Editorial Awwwards style) */
-        header { 
-            background: var(--bg-surface);
-            padding: 1.5rem 3rem; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .nav-logo {
-            display: flex;
-            align-items: center;
-            gap: 1.2rem;
-            text-decoration: none;
-        }
-        .nav-logo img { height: 38px; width: auto; object-fit: contain; }
-        .nav-separator {
-            width: 1px;
-            height: 24px;
-            background-color: var(--border-color);
-        }
-        .nav-identity {
-            font-family: var(--font-head);
-            font-weight: 600;
-            font-size: 1.2rem;
-            color: var(--text-primary);
-            letter-spacing: 0.8px;
-            margin: 0;
-        }
-        .nav-links { display: flex; gap: 2.5rem; align-items: center; }
-        .nav-links a { 
-            color: var(--text-primary); 
-            text-decoration: none; 
-            font-weight: 700; 
-            font-size: 0.85rem;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            transition: color 0.3s ease;
-        }
-        .nav-links a:hover { color: var(--accent); }
-        .btn-primary {
-            background: var(--text-primary);
-            color: white !important;
-            padding: 0.6rem 1.6rem;
-            border-radius: 4px;
-            border: 1px solid var(--text-primary);
-            cursor: pointer;
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            letter-spacing: 1px;
-            transition: all 0.3s ease;
-        }
-        .btn-primary:hover { 
-            background: var(--accent); 
-            border-color: var(--accent);
-        }
-
-        /* Marketplace Page Layout */
-        .marketplace-wrapper {
-            max-width: 100vw;
-            margin: 3rem 2rem;
-            padding: 0 1.5rem;
-            display: flex;
-            flex-direction: column;
-            gap: 2.5rem;
-            flex: 1;
-        }
-
-        .marketplace-layout {
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-        }
-
-        /* Sidebar / Category Filter Menu */
-        .sidebar {
-            background: var(--bg-surface);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            padding: 1rem;
-            display: flex;
-            overflow-x: auto;
-            gap: 0.75rem;
-            white-space: nowrap;
-            scrollbar-width: none;
-        }
-        .sidebar::-webkit-scrollbar { display: none; }
-        
-        .sidebar h3 {
-            display: none;
-            font-size: 1.2rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 1rem;
-            color: var(--text-primary);
-        }
-
-        .sidebar a {
-            text-decoration: none;
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            padding: 0.6rem 1.2rem;
-            border-radius: 4px;
-            border: 1px solid var(--border-color);
-            transition: all 0.3s ease;
-        }
-        .sidebar a.active, .sidebar a:hover {
-            color: white;
-            background: var(--text-primary);
-            border-color: var(--text-primary);
-        }
-
-        /* Public Catalog Grid */
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 2rem;
-            width: 100%;
-        }
-
-        /* Catalog Card Style */
-        .card {
-            background: var(--bg-surface);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            cursor: pointer;
-            transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
-        }
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 30px rgba(0,0,0,0.05);
-            border-color: var(--accent);
-        }
-        .card img {
-            width: 100%;
-            height: 220px;
-            object-fit: cover;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .card-content {
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-        }
-        .tag-row {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-            margin-bottom: 0.75rem;
-        }
-        .tag {
-            color: var(--text-secondary);
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 700;
-        }
-        .tag.reserved {
-            color: var(--accent);
-        }
-        .card-title {
-            font-size: 1.4rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            line-height: 1.2;
-        }
-        .card-desc {
-            font-size: 0.95rem;
-            color: var(--text-secondary);
-            line-height: 1.4;
-            margin-bottom: 1.2rem;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-        .price {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-top: auto;
-        }
-        .card-seller {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            margin-top: 0.75rem;
-            border-top: 1px solid var(--border-color);
-            padding-top: 0.75rem;
-        }
-
-        /* Reserved States */
-        .card.reserved-card img {
-            filter: grayscale(40%) opacity(0.8);
-        }
-        .card.reserved-card .card-title {
-            color: var(--text-secondary);
-        }
-
-        /* Modal Base Structure (Refined Zoomable Slide-up) */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0; top: 0; width: 100%; height: 100%;
-            background-color: rgba(0,0,0,0.4);
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            transition: opacity 0.4s ease;
-        }
-        .modal-overlay.active {
-            opacity: 1;
-        }
-        .modal-content {
-            background-color: var(--bg-surface);
-            padding: 2.5rem;
-            border-radius: 4px;
-            width: 90%;
-            max-width: 550px;
-            position: relative;
-            max-height: 90vh;
-            overflow-y: auto;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
-            transform: translateY(20px);
-            transition: transform 0.4s ease;
-        }
-        .modal-overlay.active .modal-content {
-            transform: translateY(0);
-        }
-        .close-btn {
-            position: absolute;
-            top: 1.2rem;
-            right: 1.5rem;
-            font-size: 1.8rem;
-            cursor: pointer;
-            color: var(--text-secondary);
-            transition: color 0.3s;
-        }
-        .close-btn:hover { color: var(--accent); }
-
-        /* Carousel inside Modal (Clean object-fit: contain) */
-        .carousel {
-            position: relative;
-            margin-bottom: 1.5rem;
-            background-color: #F1F5F9; /* Solid elegant slate backdrop */
-            border-radius: 4px;
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-        }
-        .carousel img {
-            width: 100%;
-            height: 320px;
-            object-fit: contain; /* Keeps correct aspect ratio for any layout size */
-            display: block;
-        }
-        .carousel-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(26, 32, 44, 0.8);
-            color: white;
-            border: none;
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            border-radius: 50%;
-            transition: background-color 0.3s;
-            font-size: 1rem;
-        }
-        .carousel-btn:hover { background-color: var(--accent); }
-        .prev-btn { left: 12px; }
-        .next-btn { right: 12px; }
-
-        /* Reservation Form Styling */
-        .reserve-form {
-            margin-top: 2rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.8rem;
-            border-top: 1px solid var(--border-color);
-            padding-top: 1.5rem;
-        }
-        .reserve-form label {
-            font-weight: 700;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--text-secondary);
-        }
-        .reserve-form input {
-            padding: 0.8rem;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            font-family: var(--font-body);
-            font-size: 0.95rem;
-            background: var(--bg-base);
-            color: var(--text-primary);
-            transition: border-color 0.3s;
-        }
-        .reserve-form input:focus {
-            outline: none;
-            border-color: var(--text-primary);
-        }
-        .reserve-form button {
-            background-color: var(--text-primary);
-            color: white;
-            border: none;
-            padding: 0.9rem;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 700;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: background-color 0.3s;
-        }
-        .reserve-form button:hover {
-            background-color: var(--accent);
-        }
-
-        /* Footer */
-        footer {
-            background: var(--bg-surface);
-            border-top: 1px solid var(--border-color);
-            padding: 4rem 2rem;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1.5rem;
-            margin-top: auto;
-        }
-        .footer-logo img { height: 50px; width: auto; opacity: 0.6; filter: grayscale(100%); transition: filter 0.3s; }
-        .footer-logo img:hover { filter: grayscale(0%); opacity: 1; }
-        .footer-text { font-size: 0.85rem; color: var(--text-secondary); letter-spacing: 0.5px; }
-
-        /* Desktop Layout Adaptability */
-        @media (min-width: 768px) {
-            .marketplace-layout {
-                flex-direction: row;
-                align-items: flex-start;
-                gap: 3rem;
-            }
-            .sidebar {
-                flex-direction: column;
-                width: 240px;
-                position: sticky;
-                top: 100px;
-                white-space: normal;
-                flex-shrink: 0;
-            }
-            .sidebar h3 {
-                display: block;
-            }
-            .sidebar a {
-                border-color: transparent;
-                padding: 0.8rem 1rem;
-            }
-        }
-    </style>
-</head>
+    @media (max-width: 768px) {
+        /* Single column mobile safety */
+        .grid { grid-template-columns: minmax(0, 1fr); max-width: 450px; margin: 0 auto; justify-items: center; }
+        .marketplace-wrapper { padding: 0 1rem; }
+    }
+</style>
 <body>
-
-    <!-- Transparent Watermark background segment -->
-    <div class="bg-watermark"></div>
-
-    <!-- Editorial Header -->
-    <header>
-        <a href="/" class="nav-logo">
-            <img src="/images/Sennan_and_Kumajiro.png" alt="Sennan City and Kumajiro Logo">
-            <div class="nav-separator"></div>
-            <span class="nav-identity">Sennan City JETs</span>
-        </a>
-        <nav class="nav-links">
-            <a href="/listings">Marketplace</a>
-            <% if(user) { %>
-                <a href="/dashboard" class="btn-primary">Dashboard</a>
-            <% } else { %>
-                <a href="/auth/login" class="btn-primary">Log In</a>
-            <% } %>
-        </nav>
-    </header>
+    <%- include('partials/header') %>
 
     <div class="marketplace-wrapper">
-        <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem;">
-            <h1 style="font-size: 2.8rem; font-weight: 400; line-height: 1.1;">Public Sayonara Catalog</h1>
-            <p style="color: var(--text-secondary); margin: 0.5rem 0 0 0; font-size: 1.1rem;">Acquire and share local community resources.</p>
+        <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem; text-align: center;">
+            <h1 style="font-size: 2.8rem; font-weight: 400; line-height: 1.1;">JET Marketplace</h1>
+            <p style="color: var(--text-secondary); margin: 0.5rem 0 0 0; font-size: 1.1rem;">A place to list and share pre-loved items among JETs.</p>
         </div>
 
         <div class="marketplace-layout">
-            <!-- Sidebar with Category Links -->
-            <aside class="sidebar">
+            <aside class="sidebar glass-panel">
                 <h3>Filter Directory</h3>
-                <a href="/listings" class="<%= currentCategory === 'ALL' ? 'active' : '' %>">All Resources</a>
-                <a href="/listings?category=KITCHEN" class="<%= currentCategory === 'KITCHEN' ? 'active' : '' %>">Kitchen</a>
-                <a href="/listings?category=FURNITURE" class="<%= currentCategory === 'FURNITURE' ? 'active' : '' %>">Furniture</a>
-                <a href="/listings?category=APPLIANCES" class="<%= currentCategory === 'APPLIANCES' ? 'active' : '' %>">Appliances</a>
-                <a href="/listings?category=CLOTHING" class="<%= currentCategory === 'CLOTHING' ? 'active' : '' %>">Clothing</a>
-                <a href="/listings?category=OTHERS" class="<%= currentCategory === 'OTHERS' ? 'active' : '' %>">Others Items</a>
+                <a href="/listings" class="<%= typeof currentCategory != 'undefined' && currentCategory === 'ALL' ? 'active' : '' %>">All Resources</a>
+                <a href="/listings?category=KITCHEN" class="<%= typeof currentCategory != 'undefined' && currentCategory === 'KITCHEN' ? 'active' : '' %>">Kitchen</a>
+                <a href="/listings?category=FURNITURE" class="<%= typeof currentCategory != 'undefined' && currentCategory === 'FURNITURE' ? 'active' : '' %>">Furniture</a>
+                <a href="/listings?category=APPLIANCES" class="<%= typeof currentCategory != 'undefined' && currentCategory === 'APPLIANCES' ? 'active' : '' %>">Appliances</a>
+                <a href="/listings?category=CLOTHING" class="<%= typeof currentCategory != 'undefined' && currentCategory === 'CLOTHING' ? 'active' : '' %>">Clothing</a>
+                <a href="/listings?category=OTHERS" class="<%= typeof currentCategory != 'undefined' && currentCategory === 'OTHERS' ? 'active' : '' %>">Others Items</a>
             </aside>
 
-            <!-- Main Items Catalog Grid -->
             <main class="grid">
-                <% if (items.length > 0) { %>
+                <% if (typeof items != 'undefined' && items.length > 0) { %>
                     <% items.forEach(item => { %>
-                        <div class="card <%= item.status === 'RESERVED' ? 'reserved-card' : '' %>" 
-                             data-item="<%= encodeURIComponent(JSON.stringify(item)) %>" 
-                             onclick="openModal(this)">
-                            
-                            <img src="<%= item.images[0] || 'https://via.placeholder.com/400x300' %>" alt="<%= item.title %>">
+                        <div class="card glass-panel <%= item.status === 'RESERVED' ? 'reserved-card' : '' %>" 
+                             data-item="<%= encodeURIComponent(JSON.stringify(item)) %>" onclick="openModal(this)">
+                             
+                            <!-- Render Primary Image or Fallback SVG -->
+                            <img src="<%= item.images && item.images[0] ? item.images[0] : 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'300\' viewBox=\'0 0 400 300\'%3E%3Crect width=\'100%25\' height=\'100%25\' fill=\'%23f1f5f9\'/%3E%3Cpath d=\'M150 200 L200 130 L250 180 L280 150 L320 220 Z\' fill=\'%23cbd5e1\'/%3E%3Ccircle cx=\'180\' cy=\'120\' r=\'20\' fill=\'%23cbd5e1\'/%3E%3C/svg%3E' %>" 
+                                 alt="<%= item.title %>"
+                                 onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'300\' viewBox=\'0 0 400 300\'%3E%3Crect width=\'100%25\' height=\'100%25\' fill=\'%23f1f5f9\'/%3E%3Cpath d=\'M150 200 L200 130 L250 180 L280 150 L320 220 Z\' fill=\'%23cbd5e1\'/%3E%3Ccircle cx=\'180\' cy=\'120\' r=\'20\' fill=\'%23cbd5e1\'/%3E%3C/svg%3E';">
                             
                             <div class="card-content">
-                                <div class="tag-row">
-                                    <span class="tag"><%= item.category %></span>
+                                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem;">
+                                    <span style="color: var(--text-secondary); font-size: 0.7rem; font-weight: 700; text-transform: uppercase;"><%= item.category %></span>
                                     <% if (item.status === 'RESERVED') { %>
-                                        <span class="tag reserved">Reserved for <%= item.reserveeName %></span>
+                                        <span style="color: var(--accent); font-size: 0.7rem; font-weight: 700; text-transform: uppercase;">Reserved for <%= item.reserveeName %></span>
                                     <% } %>
                                 </div>
-
-                                <h3 class="card-title"><%= item.title %></h3>
-                                <p class="card-desc"><%= item.description %></p>
-                                <div class="price">¥<%= item.price.toLocaleString() %></div>
-                                <div class="card-seller">Owner: <%= item.user.name %></div>
+                                <h3 style="font-size: 1.4rem; font-weight: 600; margin-bottom: 0.5rem;"><%= item.title %></h3>
+                                <p style="font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 1.2rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;"><%= item.description %></p>
+                                <div style="font-size: 1.3rem; font-weight: 700; color: var(--text-primary); margin-top: auto;">¥<%= item.price.toLocaleString() %></div>
+                                
+                                <!-- Seller Display -->
+                                <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.75rem; border-top: 1px solid var(--border-color); padding-top: 0.75rem;">
+                                    Seller: <%= item.user ? item.user.name : 'Unknown' %>
+                                </div>
                             </div>
                         </div>
                     <% }) %>
                 <% } else { %>
-                    <div style="grid-column: 1 / -1; padding: 4rem; text-align: center; border: 1px dashed var(--border-color); border-radius: 4px; background: var(--bg-surface);">
+                    <div class="glass-panel" style="grid-column: 1 / -1; padding: 4rem; text-align: center; border: 1px dashed var(--border-color);">
                         <p style="color: var(--text-secondary); font-style: italic;">No items currently available in this category.</p>
                     </div>
                 <% } %>
@@ -500,125 +114,104 @@
         </div>
     </div>
 
-    <!-- Modal overlay box -->
+    <!-- Interactive Modal -->
     <div id="itemModal" class="modal-overlay" onclick="handleOutsideClick(event)">
-        <div class="modal-content">
+        <div class="modal-content glass-panel" style="background: rgba(255,255,255,0.95);">
             <span class="close-btn" onclick="closeModal()">&times;</span>
-            
-            <!-- Image Carousel Container -->
             <div class="carousel">
-                <button class="carousel-btn prev-btn" onclick="changeImage(-1, event)">&#10094;</button>
+                <button class="carousel-btn" style="left: 12px;" onclick="changeImage(-1, event)">&#10094;</button>
                 <img id="modalImage" src="" alt="Listing Image">
-                <button class="carousel-btn next-btn" onclick="changeImage(1, event)">&#10095;</button>
-            </div>
-
-            <div class="tag-row">
-                <span id="modalCategory" class="tag"></span>
-                <span id="modalReservedStatus" class="tag reserved" style="display: none;"></span>
+                <button class="carousel-btn" style="right: 12px;" onclick="changeImage(1, event)">&#10095;</button>
             </div>
             
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                <span id="modalCategory" style="color: var(--text-secondary); font-size: 0.7rem; font-weight: 700; text-transform: uppercase;"></span>
+                <span id="modalReservedStatus" style="color: var(--accent); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; display: none;"></span>
+            </div>
             <h2 id="modalTitle" style="margin-top: 0.5rem; font-size: 2rem;"></h2>
-            <p id="modalDescription" style="color: var(--text-secondary); line-height: 1.5; margin: 1rem 0;"></p>
-            <div class="price" id="modalPrice"></div>
+            <p id="modalDescription" style="color: var(--text-secondary); line-height: 1.5; margin: 1rem 0; word-wrap: break-word; overflow-wrap: break-word;"></p>
+            <div id="modalPrice" style="font-size: 1.3rem; font-weight: 700;"></div>
+            
+            <!-- Contact Info Panel (Only visible within the modal) -->
             <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
-                Seller Contact: <span id="modalSeller" style="font-weight: 700; color: var(--text-primary);"></span>
+                Seller Name: <span id="modalSeller" style="font-weight: 700; color: var(--text-primary);"></span> <br>
+                Contact via: <span id="modalContactInfo" style="font-weight: 600; color: var(--text-primary);"></span>
             </p>
 
-            <!-- Reservation form segment -->
             <form id="reservationForm" class="reserve-form" method="POST" action="">
-                <label for="reserveeName">Secure Reservation</label>
+                <label for="reserveeName" style="font-weight: 700; font-size: 0.85rem; text-transform: uppercase; color: var(--text-secondary);">Secure Reservation</label>
                 <input type="text" id="reserveeName" name="reserveeName" placeholder="Enter your full name to reserve" required>
-                <button type="submit">Submit Reservation</button>
+                <button type="submit" class="btn-primary" style="padding: 0.9rem; margin-top: 0.5rem;">Submit Reservation</button>
             </form>
         </div>
     </div>
 
-    <!-- Minimalist Footer -->
-    <footer>
-        <div class="footer-logo">
-            <img src="/images/Emblem_of_Sennan,_Osaka.png" alt="Sennan City Emblem">
-        </div>
-        <div class="footer-text">
-            &copy; <%= new Date().getFullYear() %> Sennan JET Community Resource Site. All rights reserved.
-        </div>
-    </footer>
+    <%- include('partials/footer') %>
 
-    <!-- Client Interactive Logic -->
     <script>
+        // Use the exact same constant fallback graphic for the image modal carousel
+        const fallbackSVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='100%25' height='100%25' fill='%23f1f5f9'/%3E%3Cpath d='M150 200 L200 130 L250 180 L280 150 L320 220 Z' fill='%23cbd5e1'/%3E%3Ccircle cx='180' cy='120' r='20' fill='%23cbd5e1'/%3E%3C/svg%3E";
         let currentImages = [];
         let currentImageIndex = 0;
 
         function openModal(element) {
             const itemData = JSON.parse(decodeURIComponent(element.getAttribute('data-item')));
             
-            // Populate modal fields
             document.getElementById('modalTitle').innerText = itemData.title;
             document.getElementById('modalDescription').innerText = itemData.description;
             document.getElementById('modalPrice').innerText = '¥' + itemData.price.toLocaleString();
             document.getElementById('modalCategory').innerText = itemData.category;
-            document.getElementById('modalSeller').innerText = itemData.user.name;
-
-            // Handle Reserved Status Tag inside Modal
+            
+            // Populate our new contact variables
+            document.getElementById('modalSeller').innerText = itemData.user ? itemData.user.name : 'Unknown';
+            document.getElementById('modalContactInfo').innerText = itemData.contactInfo || 'Not Provided';
+            
             const statusTag = document.getElementById('modalReservedStatus');
             const reserveForm = document.getElementById('reservationForm');
             
             if (itemData.status === 'RESERVED') {
                 statusTag.style.display = 'inline-block';
                 statusTag.innerText = `Reserved for ${itemData.reserveeName}`;
-                reserveForm.style.display = 'none'; // Hide form if already reserved
+                reserveForm.style.display = 'none';
             } else {
                 statusTag.style.display = 'none';
-                reserveForm.style.display = 'flex'; // Show form
+                reserveForm.style.display = 'flex';
                 reserveForm.action = `/listings/${itemData.id}/reserve`;
             }
 
-            // Handle Carousel Setup
-            currentImages = itemData.images && itemData.images.length > 0 
-                ? itemData.images 
-                : ['https://via.placeholder.com/400x300?text=No+Image+Provided'];
-            
+            // Carousel fallback array setup
+            currentImages = itemData.images && itemData.images.length > 0 ? itemData.images : [fallbackSVG];
             currentImageIndex = 0;
-            updateCarouselImage();
+            
+            // Assign image and ensure it handles broken links gracefully
+            const modalImageElement = document.getElementById('modalImage');
+            modalImageElement.src = currentImages[0];
+            modalImageElement.onerror = function() {
+                this.onerror = null;
+                this.src = fallbackSVG;
+            };
 
-            // Open Modal with Smooth Fade-in
             const modal = document.getElementById('itemModal');
             modal.style.display = 'flex';
-            setTimeout(() => {
-                modal.classList.add('active');
-            }, 10);
+            setTimeout(() => modal.classList.add('active'), 10);
         }
 
         function closeModal() {
             const modal = document.getElementById('itemModal');
             modal.classList.remove('active');
-            setTimeout(() => {
-                modal.style.display = 'none';
-            }, 400); // Wait for transition animation to end
+            setTimeout(() => modal.style.display = 'none', 400);
         }
 
         function handleOutsideClick(event) {
-            const modalContent = document.querySelector('.modal-content');
-            if (!modalContent.contains(event.target)) {
-                closeModal();
-            }
+            if (!document.querySelector('.modal-content').contains(event.target)) closeModal();
         }
 
-        // Carousel Switching Logic
         function changeImage(direction, event) {
-            event.stopPropagation(); // Avoid triggering outside modal click listeners
-            currentImageIndex += direction;
+            event.stopPropagation();
+            currentImageIndex = (currentImageIndex + direction + currentImages.length) % currentImages.length;
             
-            if (currentImageIndex < 0) {
-                currentImageIndex = currentImages.length - 1;
-            } else if (currentImageIndex >= currentImages.length) {
-                currentImageIndex = 0;
-            }
-            
-            updateCarouselImage();
-        }
-
-        function updateCarouselImage() {
-            document.getElementById('modalImage').src = currentImages[currentImageIndex];
+            const modalImageElement = document.getElementById('modalImage');
+            modalImageElement.src = currentImages[currentImageIndex];
         }
     </script>
 </body>
