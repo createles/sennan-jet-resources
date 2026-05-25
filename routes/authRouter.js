@@ -38,7 +38,7 @@ authRouter.post('/login', async (req, res) => {
     const user = await prisma.user.findUnique({ where: { email } });
     if (user && await compare(password, user.password)) {
       req.session.userId = user.id;
-      res.redirect('/');
+      res.redirect('/dashboard');
     } else {
       res.status(401).send('Invalid email or password.');
     }
