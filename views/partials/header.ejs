@@ -1,0 +1,25 @@
+<!-- Dynamic Sky & Watermark (Placed here to render across all pages instantly) -->
+<div class="bg-sky"></div>
+<div class="bg-watermark"></div>
+
+<header id="main-header">
+    <a href="/" style="display: flex; align-items: center; gap: 1.2rem; text-decoration: none;">
+        <img src="/images/Sennan_and_Kumajiro.png" alt="Sennan City and Kumajiro" style="height: 38px; width: auto; object-fit: contain;">
+        <div style="width: 1px; height: 24px; background-color: var(--border-color);"></div>
+        <span style="font-family: var(--font-head); font-weight: 600; font-size: 1.2rem; color: var(--text-primary); letter-spacing: 0.8px;">Sennan City JETs</span>
+    </a>
+    
+    <nav style="display: flex; gap: 2rem; align-items: center; flex-wrap: wrap; justify-content: center;">
+        <a href="/listings" style="color: var(--text-primary); text-decoration: none; font-weight: 700; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase;">Marketplace</a>
+        
+        <% if(typeof user != 'undefined' && user) { %>
+            <a href="/dashboard" style="color: var(--text-primary); text-decoration: none; font-weight: 700; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase;">Dashboard</a>
+            <!-- LOG OUT Replaces LOG IN when authenticated -->
+            <form action="/auth/logout" method="POST" style="margin: 0;">
+                <button type="submit" class="btn-primary" style="background-color: var(--accent); border-color: var(--accent);">Log Out</button>
+            </form>
+        <% } else { %>
+            <a href="/auth/login" class="btn-primary">Log In</a>
+        <% } %>
+    </nav>
+</header>

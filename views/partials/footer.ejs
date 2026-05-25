@@ -1,0 +1,30 @@
+<footer>
+    <div class="footer-logo">
+        <img src="/images/Emblem_of_Sennan,_Osaka.png" alt="Sennan City Emblem">
+    </div>
+    <div style="font-size: 0.85rem; color: var(--text-secondary); letter-spacing: 0.5px;">
+        &copy; <%= new Date().getFullYear() %> Sennan JET Community Resource Site. All rights reserved.
+    </div>
+</footer>
+
+<script>
+    // Global Script: Header Shrink & Morning-To-Sunset Background Effect
+    document.addEventListener('DOMContentLoaded', () => {
+        const header = document.getElementById('main-header');
+        const skyBackground = document.querySelector('.bg-sky');
+
+        window.addEventListener('scroll', () => {
+            // Header shrinking
+            if (window.scrollY > 50) header.classList.add('scrolled');
+            else header.classList.remove('scrolled');
+
+            // Morning-To-Sunset Interpolator
+            const maxScroll = document.body.scrollHeight - window.innerHeight;
+            if (maxScroll > 0 && skyBackground) {
+                const scrollPercent = (window.scrollY / maxScroll) * 100;
+                // Shifts the background down simulating the sun setting
+                skyBackground.style.backgroundPosition = `50% ${scrollPercent}%`; 
+            }
+        });
+    });
+</script>
