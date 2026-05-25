@@ -31,16 +31,15 @@
     .modal-overlay.active { opacity: 1; }
     .modal-content { padding: 2.5rem; width: 90vw; max-width: 550px; position: relative; max-height: 90vh; overflow-y: auto; overflow-x: hidden; transform: translateY(20px); transition: transform 0.4s ease; box-sizing: border-box;}
     .modal-overlay.active .modal-content { transform: translateY(0); }
-    .close-btn { position: absolute; top: 1.2rem; right: 1.5rem; font-size: 1.8rem; cursor: pointer; color: var(--text-secondary); transition: color 0.3s; }
+    .close-btn { position: fixed; top: 0.3rem; right: 1rem; font-size: 1.8rem; cursor: pointer; color: var(--text-secondary); transition: color 0.3s; }
     .close-btn:hover { color: var(--accent); }
     
-    .carousel { position: relative; margin-bottom: 1.5rem; background-color: #F1F5F9; border-radius: 4px; overflow: hidden; border: 1px solid var(--border-color); }
+    .carousel { position: relative; margin-bottom: 1.5rem; background-color: #F1F5F9; border-radius: 4px; overflow: hidden; border: 1px solid var(--border-color); padding: 0.5rem }
     .carousel img { width: 100%; height: 320px; object-fit: contain; display: block; }
     .carousel-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(26, 32, 44, 0.8); color: white; border: none; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 50%; transition: background-color 0.3s; }
     .carousel-btn:hover { background-color: var(--accent); }
 
-    .reserve-form { margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.8rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem; }
-    .reserve-form input { padding: 0.8rem; border: 1px solid var(--border-color); border-radius: 4px; font-family: var(--font-body); box-sizing: border-box;}
+    .reserve-form-container { margin-top: 1.5rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem; display: flex; flex-direction: column; gap: 0.8rem; }
 
     @media (min-width: 768px) {
         .marketplace-layout { flex-direction: row; align-items: flex-start; gap: 3rem; }
@@ -58,6 +57,11 @@
 </style>
 <body>
     <%- include('partials/header') %>
+
+    <script>
+        // Since you pass 'user' directly as the id string/number or null from your controller
+        const CURRENT_USER_ID = <%- user ? JSON.stringify(user) : 'null' %>;
+    </script>
 
     <div class="marketplace-wrapper">
         <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem; text-align: center;">
@@ -82,7 +86,6 @@
                         <div class="card glass-panel <%= item.status === 'RESERVED' ? 'reserved-card' : '' %>" 
                              data-item="<%= encodeURIComponent(JSON.stringify(item)) %>" onclick="openModal(this)">
                              
-                            <!-- Render Primary Image or Fallback SVG -->
                             <img src="<%= item.images && item.images[0] ? item.images[0] : 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'300\' viewBox=\'0 0 400 300\'%3E%3Crect width=\'100%25\' height=\'100%25\' fill=\'%23f1f5f9\'/%3E%3Cpath d=\'M150 200 L200 130 L250 180 L280 150 L320 220 Z\' fill=\'%23cbd5e1\'/%3E%3Ccircle cx=\'180\' cy=\'120\' r=\'20\' fill=\'%23cbd5e1\'/%3E%3C/svg%3E' %>" 
                                  alt="<%= item.title %>"
                                  onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'300\' viewBox=\'0 0 400 300\'%3E%3Crect width=\'100%25\' height=\'100%25\' fill=\'%23f1f5f9\'/%3E%3Cpath d=\'M150 200 L200 130 L250 180 L280 150 L320 220 Z\' fill=\'%23cbd5e1\'/%3E%3Ccircle cx=\'180\' cy=\'120\' r=\'20\' fill=\'%23cbd5e1\'/%3E%3C/svg%3E';">
@@ -91,14 +94,13 @@
                                 <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem;">
                                     <span style="color: var(--text-secondary); font-size: 0.7rem; font-weight: 700; text-transform: uppercase;"><%= item.category %></span>
                                     <% if (item.status === 'RESERVED') { %>
-                                        <span style="color: var(--accent); font-size: 0.7rem; font-weight: 700; text-transform: uppercase;">Reserved for <%= item.reserveeName %></span>
+                                        <span style="color: var(--accent); font-size: 0.7rem; font-weight: 700; text-transform: uppercase;">Reserved</span>
                                     <% } %>
                                 </div>
                                 <h3 style="font-size: 1.4rem; font-weight: 600; margin-bottom: 0.5rem;"><%= item.title %></h3>
-                                <p style="font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 1.2rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;"><%= item.description %></p>
+                                <p style="font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 1.2rem; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;"><%= item.description %></p>
                                 <div style="font-size: 1.3rem; font-weight: 700; color: var(--text-primary); margin-top: auto;">¥<%= item.price.toLocaleString() %></div>
                                 
-                                <!-- Seller Display -->
                                 <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.75rem; border-top: 1px solid var(--border-color); padding-top: 0.75rem;">
                                     Seller: <%= item.user ? item.user.name : 'Unknown' %>
                                 </div>
@@ -114,7 +116,6 @@
         </div>
     </div>
 
-    <!-- Interactive Modal -->
     <div id="itemModal" class="modal-overlay" onclick="handleOutsideClick(event)">
         <div class="modal-content glass-panel" style="background: rgba(255,255,255,0.95);">
             <span class="close-btn" onclick="closeModal()">&times;</span>
@@ -132,24 +133,18 @@
             <p id="modalDescription" style="color: var(--text-secondary); line-height: 1.5; margin: 1rem 0; word-wrap: break-word; overflow-wrap: break-word;"></p>
             <div id="modalPrice" style="font-size: 1.3rem; font-weight: 700;"></div>
             
-            <!-- Contact Info Panel (Only visible within the modal) -->
             <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
                 Seller Name: <span id="modalSeller" style="font-weight: 700; color: var(--text-primary);"></span> <br>
                 Contact via: <span id="modalContactInfo" style="font-weight: 600; color: var(--text-primary);"></span>
             </p>
 
-            <form id="reservationForm" class="reserve-form" method="POST" action="">
-                <label for="reserveeName" style="font-weight: 700; font-size: 0.85rem; text-transform: uppercase; color: var(--text-secondary);">Secure Reservation</label>
-                <input type="text" id="reserveeName" name="reserveeName" placeholder="Enter your full name to reserve" required>
-                <button type="submit" class="btn-primary" style="padding: 0.9rem; margin-top: 0.5rem;">Submit Reservation</button>
-            </form>
+            <div id="reserveUI" class="reserve-form-container"></div>
         </div>
     </div>
 
     <%- include('partials/footer') %>
 
     <script>
-        // Use the exact same constant fallback graphic for the image modal carousel
         const fallbackSVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='100%25' height='100%25' fill='%23f1f5f9'/%3E%3Cpath d='M150 200 L200 130 L250 180 L280 150 L320 220 Z' fill='%23cbd5e1'/%3E%3Ccircle cx='180' cy='120' r='20' fill='%23cbd5e1'/%3E%3C/svg%3E";
         let currentImages = [];
         let currentImageIndex = 0;
@@ -162,28 +157,73 @@
             document.getElementById('modalPrice').innerText = '¥' + itemData.price.toLocaleString();
             document.getElementById('modalCategory').innerText = itemData.category;
             
-            // Populate our new contact variables
             document.getElementById('modalSeller').innerText = itemData.user ? itemData.user.name : 'Unknown';
             document.getElementById('modalContactInfo').innerText = itemData.contactInfo || 'Not Provided';
             
             const statusTag = document.getElementById('modalReservedStatus');
-            const reserveForm = document.getElementById('reservationForm');
+            const reserveUI = document.getElementById('reserveUI');
             
-            if (itemData.status === 'RESERVED') {
-                statusTag.style.display = 'inline-block';
-                statusTag.innerText = `Reserved for ${itemData.reserveeName}`;
-                reserveForm.style.display = 'none';
-            } else {
-                statusTag.style.display = 'none';
-                reserveForm.style.display = 'flex';
-                reserveForm.action = `/listings/${itemData.id}/reserve`;
+            reserveUI.innerHTML = ''; // Clear prior form states
+
+            // 1. User is NOT logged in
+            if (CURRENT_USER_ID === null) {
+                if (itemData.status === 'RESERVED') {
+                    statusTag.style.display = 'inline-block';
+                    statusTag.innerText = 'Reserved';
+                } else {
+                    statusTag.style.display = 'none';
+                }
+
+                reserveUI.innerHTML = `
+                    <p style="text-align: center; font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem;">You must be logged in to reserve listings.</p>
+                    <a href="/auth/login" class="btn-primary" style="text-align: center; padding: 0.9rem; display: block; text-decoration: none;">Log in to reserve this item</a>
+                `;
+            } 
+            // 2. User IS logged in
+            else {
+                if (itemData.status === 'RESERVED') {
+                    statusTag.style.display = 'inline-block';
+
+                    // If you are the reservee
+                    if (itemData.reserveeId === CURRENT_USER_ID) {
+                        statusTag.innerText = 'Your Reservation';
+                        reserveUI.innerHTML = `
+                            <form method="POST" action="/listings/${itemData.id}/unreserve" style="margin: 0; display: flex; flex-direction: column;">
+                                <button type="submit" class="btn-primary" style="background-color: var(--accent); border-color: var(--accent); padding: 0.9rem;">Cancel Reservation</button>
+                            </form>
+                        `;
+                    } else {
+                        statusTag.innerText = 'Reserved';
+                        reserveUI.innerHTML = `
+                            <div class="glass-panel" style="padding: 1rem; text-align: center; background: rgba(26,54,93,0.05); border: none;">
+                                <p style="color: var(--text-secondary); font-style: italic; margin: 0; font-size: 0.9rem;">This item is currently reserved by another member.</p>
+                            </div>
+                        `;
+                    }
+                } else {
+                    // Item is available
+                    statusTag.style.display = 'none';
+
+                    if (itemData.userId === CURRENT_USER_ID) {
+                        reserveUI.innerHTML = `
+                            <div class="glass-panel" style="padding: 1rem; text-align: center; background: rgba(26,54,93,0.05); border: none;">
+                                <p style="color: var(--text-secondary); font-style: italic; margin: 0; font-size: 0.9rem;">This is your listing. Manage reservations on your dashboard.</p>
+                            </div>
+                        `;
+                    } else {
+                        reserveUI.innerHTML = `
+                            <form method="POST" action="/listings/${itemData.id}/reserve" style="margin: 0; display: flex; flex-direction: column;">
+                                <button type="submit" class="btn-primary" style="padding: 0.9rem;">Submit Reservation</button>
+                            </form>
+                        `;
+                    }
+                }
             }
 
-            // Carousel fallback array setup
+            // Image Carousel setup
             currentImages = itemData.images && itemData.images.length > 0 ? itemData.images : [fallbackSVG];
             currentImageIndex = 0;
             
-            // Assign image and ensure it handles broken links gracefully
             const modalImageElement = document.getElementById('modalImage');
             modalImageElement.src = currentImages[0];
             modalImageElement.onerror = function() {

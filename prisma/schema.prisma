@@ -27,7 +27,7 @@ model Item {
   category     Category
   images       String[]
   status       ItemStatus  @default(AVAILABLE)
-  reserveeName String?
+  reserveeId   String?
   userId       String
   user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt    DateTime    @default(now())
