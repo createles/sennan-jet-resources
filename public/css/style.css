@@ -22,7 +22,7 @@ body {
     overflow-x: hidden;
     min-height: 100vh;
     display: flex;
-    flex-direction: column;a
+    flex-direction: column;
 }
 
 h1, h2, h3, h4, h5 { font-family: var(--font-head); margin: 0; }
@@ -86,6 +86,50 @@ header.scrolled {
     background: var(--accent); border-color: var(--accent);
     transform: translateY(-2px); box-shadow: 0 4px 12px rgba(255,107,107,0.2);
 }
+
+/* LOGOUT BUTTON HOVER FEATURE */
+.btn-logout {
+    position: relative;
+    min-width: 110px;
+    text-align: center;
+}
+.btn-logout::after {
+    content: attr(data-name);
+}
+.btn-logout:hover::after {
+    content: "Log Out";
+}
+
+/* FALLBACK IMAGE: BOX EMOJI */
+.fallback-img {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #F7FAFC;
+    font-size: 4.5rem;
+    width: 40%;
+    min-width: 250px;
+    height: 100%;
+    border-radius: 4px 0 0 4px;
+    border-right: 1px solid var(--border-color);
+}
+.fallback-img::after {
+    content: '📦';
+}
+
+/* SCROLLBAR & MODAL OVERFLOW REFINEMENTS */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(26, 54, 93, 0.2); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(26, 54, 93, 0.4); }
+
+.modal-content, .item-modal {
+    max-height: 85vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+}
+
 footer {
     background: rgba(255, 255, 255, 0.5);
     backdrop-filter: blur(8px);
@@ -117,7 +161,7 @@ footer {
 
 /* VERTICAL MARKETPLACE PREVIEW */
 .vertical-preview-container { display: flex; flex-direction: column; gap: 1.5rem; max-height: 510px; overflow-y: auto; padding-right: 1.2rem; scrollbar-width: thin; }
-.item-card-horizontal { display: flex; flex-direction: row; background: rgba(255,255,255,0.7); border: 1px solid var(--border-color); border-radius: 4px; text-decoration: none; color: inherit; height: 220px; flex-shrink: 0; transition: transform 0.4s ease, border-color 0.4s ease, box-shadow 0.4s; backdrop-filter: blur(5px); box-sizing: border-box; overflow: hidden; width: 100%;}
+.item-card-horizontal { display: flex; flex-direction: row; background: rgba(255,255,255,0.7); border: 1px solid var(--border-color); border-radius: 4px; text-decoration: none; color: inherit; height: 220px; flex-shrink: 0; transition: transform 0.3s ease-out, border-color 0.3s ease-out, box-shadow 0.3s ease-out; backdrop-filter: blur(5px); box-sizing: border-box; overflow: hidden; width: 100%;}
 .item-card-horizontal:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.05); border-color: var(--accent); }
 .item-card-horizontal img { width: 40%; min-width: 250px; height: 100%; object-fit: cover; border-radius: 4px 0 0 4px; }
 .card-body { padding: 2rem; display: flex; flex-direction: column; justify-content: center; width: 100%; box-sizing: border-box; overflow: hidden;}
@@ -142,6 +186,7 @@ footer {
     /* Fix horizontal overflow on item cards */
     .item-card-horizontal { flex-direction: column; height: auto; max-width: 100%; }
     .item-card-horizontal img { width: 100%; min-width: 100%; height: 200px; border-radius: 4px 4px 0 0; }
+    .fallback-img { width: 100%; min-width: 100%; height: 200px; border-radius: 4px 4px 0 0; border-right: none; border-bottom: 1px solid var(--border-color); }
     .card-body { padding: 1.5rem; }
     
     .community-grid { grid-template-columns: 1fr; gap: 2rem; }
