@@ -35,7 +35,8 @@ itemRouter.get('/', async (req, res) => {
         title: 'Marketplace Listings | JET Resource Site', 
         items, 
         currentCategory: category || 'ALL',
-        user
+        user,
+        userName: req.session.userName || null
     });
   } catch (error) {
     console.error(error);

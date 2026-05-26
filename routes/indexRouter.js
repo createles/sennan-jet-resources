@@ -15,7 +15,8 @@ indexRouter.get('/', async (req, res) => {
     res.render('index', { 
       title: 'Sennan City JETs', 
       user: req.session.userId,
-      items: latestItems // Pass items to the view
+      items: latestItems, // Pass items to the view
+      userName: req.session.userName || null
     });
   } catch (error) {
     console.error("Failed to load homepage items:", error);
@@ -23,7 +24,8 @@ indexRouter.get('/', async (req, res) => {
     res.render('index', { 
       title: 'Sennan City JETs', 
       user: req.session.userId,
-      items: [] 
+      items: [],
+      userName: req.session.userName || null
     });
   }
 });
