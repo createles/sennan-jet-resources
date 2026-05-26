@@ -21,9 +21,23 @@ dashboardRouter.get('/', async (req, res) => {
             where: { userId: req.session.userId },
             orderBy: { createdAt: 'desc' }
         });
+
+        // Query the database for the reservee's name dynamically
+        const populatedItems = await Promise.all(items.map(async (item) => {
+            if (item.status === 'RESERVED' && item.reserveeId) {
+                const reservee = await prisma.user.findUnique({
+                    where: { id: item.reserveeId },
+                    select: { name: true }
+                });
+                return { ...item, reserveeName: reservee?.name || 'Unknown User' };
+            }
+            return item;
+        }));
+
         res.render('dashboard', { title: 'My Dashboard | Sennan JETs',
             user: req.session.userId,
-            items
+            items: populatedItems,
+            userName: req.session.userName || null
         });
     } catch (error) {
         console.error(error);
