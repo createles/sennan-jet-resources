@@ -32,7 +32,7 @@ itemRouter.get('/', async (req, res) => {
     const user = req.session.userId ? req.session.userId : null;
     
     res.render('listings', { 
-        title: 'Marketplace Listings | JET Resource Site', 
+        title: 'Marketplace Listings | Sennan City JETs', 
         items, 
         currentCategory: category || 'ALL',
         user,

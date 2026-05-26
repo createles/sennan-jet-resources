@@ -34,7 +34,7 @@ dashboardRouter.get('/', async (req, res) => {
             return item;
         }));
 
-        res.render('dashboard', { title: 'My Dashboard | Sennan JETs',
+        res.render('dashboard', { title: 'My Dashboard | Sennan City JETs',
             user: req.session.userId,
             items: populatedItems,
             userName: req.session.userName || null
