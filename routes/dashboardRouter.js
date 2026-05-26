@@ -45,55 +45,62 @@ dashboardRouter.get('/', async (req, res) => {
     }
 });
 
-// POST Create new item with Image Upload
-dashboardRouter.post('/item', upload.single('image'), async (req, res) => {
+// POST Create new item with Multiple Image Uploads
+dashboardRouter.post('/item', upload.array('images', 5), async (req, res) => {
     const { title, description, price, category, contactInfo } = req.body;
     let imageUrls = [];
 
     try {
-        // Upload image to Supabase if a file was provided
-        if (req.file) {
-            const file = req.file;
+        // Check if files were uploaded
+        if (req.files && req.files.length > 0) {
+            // Process each file sequentially
+            for (const file of req.files) {
+                // 1. Process image buffer with sharp
+                const processedImageBuffer = await sharp(file.buffer)
+                    .resize({
+                        width: 1200, // Maximum width
+                        withoutEnlargement: true // Prevent scaling up smaller images
+                    })
+                    .webp({ quality: 80 }) // Convert to highly compressed WebP format
+                    .toBuffer();
 
-            // Process image buffer with sharp
-            const processedImageBuffer = await sharp(file.buffer)
-                .resize({
-                    width: 1200, // Maximum width
-                    withoutEnlargement: true // Prevent scaling up smaller images
-                })
-                .webp({ quality: 80 }) // Convert to WebP format with 80% quality
-                .toBuffer();
+                // 2. Create a clean, unique, and URL-safe filename with .webp extension
+                const originalNameWithoutExt = file.originalname
+                    .split('.')
+                    .slice(0, -1)
+                    .join('.')
+                    .replace(/[^a-zA-Z0-9]/g, '-'); // Sanitize special characters
+                
+                const fileName = `${Date.now()}-${originalNameWithoutExt}.webp`;
+                
+                // 3. Upload processed image to your Supabase Storage Bucket
+                const { data, error } = await supabase.storage
+                    .from('item-images')
+                    .upload(fileName, processedImageBuffer, {
+                        contentType: 'image/webp'
+                    });
 
-            // Create a unique filename with .webp extension
-            const originalNameWithoutExt = file.originalname.split('.').slice(0, -1).join('.');
-            const fileName = `${Date.now()}-${originalNameWithoutExt.replace(/\s+/g, '-')}.webp`;
-            
-            // Upload processed image to Supabase Storage
-            const { data, error } = await supabase.storage
-                .from('item-images') // Must match your Supabase bucket name exactly
-                .upload(fileName, processedImageBuffer, {
-                    contentType: 'image/webp'
-                });
+                if (error) throw error;
 
-            if (error) throw error;
-
-            // Retrieve the public URL for the newly uploaded image
-            const { data: { publicUrl }, error: publicUrlError }  = await supabase.storage
-                .from('item-images')
-                .getPublicUrl(fileName);
-            
-            if (publicUrlError) throw publicUrlError; // Handle errors from getting the public URL
-            imageUrls.push(publicUrl);
+                // 4. Retrieve the public URL for the newly uploaded image
+                const { data: { publicUrl }, error: publicUrlError } = await supabase.storage
+                    .from('item-images')
+                    .getPublicUrl(fileName);
+                
+                if (publicUrlError) throw publicUrlError;
+                
+                imageUrls.push(publicUrl);
+            }
         }
 
-        // Create the item record in PostgreSQL via Prisma
+        // 5. Create the item record in PostgreSQL via Prisma with the images array
         await prisma.item.create({
             data: {
                 title,
                 description,
                 price: parseFloat(price),
                 category: category.toUpperCase(),
-                images: imageUrls,
+                images: imageUrls, // Store the array of string URLs
                 contactInfo,
                 userId: req.session.userId
             }
@@ -101,8 +108,8 @@ dashboardRouter.post('/item', upload.single('image'), async (req, res) => {
 
         res.redirect('/dashboard');
     } catch (error) {
-        console.error("Error creating item:", error);
-        res.status(500).send("Error creating item. Please check your image size and type.");
+        console.error("Error creating item with multiple images:", error);
+        res.status(500).send("Error creating item. Please check your images.");
     }
 });
 

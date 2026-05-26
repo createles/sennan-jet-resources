@@ -1,136 +1,536 @@
 <!DOCTYPE html>
 <html lang="en">
 <%- include('partials/head', { title: 'My Dashboard | Sennan JETs' }) %>
-<style>
-    /* Widened layout to give the split columns breathing room */
-    .dashboard-container { 
-        max-width: 1400px; 
-        margin: 3rem auto; 
-        padding: 0 2rem; 
-        flex: 1; 
-        position: relative; 
-        z-index: 2; 
-        box-sizing: border-box; 
-        width: 100%;
-    }
+    <style>
+        /* Widened layout to give the split columns breathing room */
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+            flex: 1;
+            position: relative;
+            z-index: 2;
+            box-sizing: border-box;
+            width: 100%;
+        }
 
-    /* Split column layout architecture */
-    .dashboard-split-layout {
-        display: flex;
-        flex-direction: column;
-        gap: 3rem;
-    }
-
-    .dashboard-sidebar-panel {
-        display: flex;
-        flex-direction: column;
-        gap: 2rem;
-    }
-
-    .dashboard-main-panel {
-        flex: 1;
-    }
-
-    /* Sticky control panel for screens wider than 1024px */
-    @media (min-width: 1024px) {
+        /* Split column layout architecture */
         .dashboard-split-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 3rem;
+        }
+
+        .dashboard-sidebar-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .dashboard-main-panel {
+            flex: 1;
+        }
+
+        /* Sticky control panel for screens wider than 1024px */
+        @media (min-width: 1024px) {
+            .dashboard-split-layout {
+                display: grid;
+                grid-template-columns: 420px 1fr;
+                gap: 4rem;
+                align-items: start;
+            }
+
+            .dashboard-sidebar-panel {
+                position: sticky;
+                top: 110px;
+                /* Aligns neatly below the sticky header */
+                max-height: calc(100vh - 150px);
+                overflow-y: auto;
+                padding-right: 0.5rem;
+            }
+
+            /* Hide scrollbars inside sticky sidebar for clean look */
+            .dashboard-sidebar-panel::-webkit-scrollbar {
+                display: none;
+            }
+
+            .dashboard-sidebar-panel {
+                scrollbar-width: none;
+            }
+        }
+
+        /* Common Form Styling */
+        .form-group {
+            width: 100%;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-family: var(--font-body);
+            background: rgba(255, 255, 255, 0.8);
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        /* Responsive Posting Grid */
+        .grid {
             display: grid;
-            grid-template-columns: 420px 1fr;
-            gap: 4rem;
-            align-items: start;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+            width: 100%;
+            box-sizing: border-box;
         }
 
-        .dashboard-sidebar-panel {
-            position: sticky;
-            top: 110px; /* Aligns neatly below the sticky header */
-            max-height: calc(100vh - 150px);
-            overflow-y: auto;
-            padding-right: 0.5rem;
+        /* Listing Cards */
+        .card {
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease-out, border-color 0.3s ease-out, box-shadow 0.3s ease-out;
+            padding: 0;
+            box-sizing: border-box;
+            max-width: 100%;
+            width: 100%;
         }
-        
-        /* Hide scrollbars inside sticky sidebar for clean look */
-        .dashboard-sidebar-panel::-webkit-scrollbar {
-            display: none;
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
         }
-        .dashboard-sidebar-panel {
-            scrollbar-width: none;
+
+        .card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-bottom: 1px solid var(--border-color);
         }
-    }
 
-    /* Common Form Styling */
-    .form-group { width: 100%; margin-bottom: 1.5rem; }
-    .form-group label { display: block; font-weight: 700; font-size: 0.85rem; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 0.5rem; }
-    .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 4px; font-family: var(--font-body); background: rgba(255,255,255,0.8); box-sizing: border-box;}
-    .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: var(--accent); }
+        .card .fallback-img {
+            width: 100%;
+            min-width: 100%;
+            height: 200px;
+            border-radius: 4px 4px 0 0;
+            border-right: none;
+            border-bottom: 1px solid var(--border-color);
+        }
 
-    /* Responsive Posting Grid */
-    .grid { 
-        display: grid; 
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
-        gap: 2rem; 
-        width: 100%;
-        box-sizing: border-box;
-    }
-    
-    /* Listing Cards */
-    .card { overflow: hidden; display: flex; flex-direction: column; transition: transform 0.3s ease-out, border-color 0.3s ease-out, box-shadow 0.3s ease-out; padding: 0; box-sizing: border-box; max-width: 100%; width: 100%;}
-    .card:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-    .card img { width: 100%; height: 200px; object-fit: cover; border-bottom: 1px solid var(--border-color); }
+        .card-content {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
 
-    .card .fallback-img {
-        width: 100%; min-width: 100%; height: 200px;
-        border-radius: 4px 4px 0 0;
-        border-right: none;
-        border-bottom: 1px solid var(--border-color);
-    }
+        .card-content h4,
+        .card-content p {
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+        }
 
-    .card-content { padding: 1.5rem; display: flex; flex-direction: column; flex: 1; box-sizing: border-box; overflow: hidden;}
-    .card-content h4, .card-content p { overflow-wrap: break-word; word-wrap: break-word;}
+        .dashboard-btn {
+            padding: 8px 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s;
+            color: white;
+            font-family: var(--font-body);
+        }
 
-    .dashboard-btn { padding: 8px 12px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; border-radius: 4px; border: none; cursor: pointer; transition: background 0.3s; color: white; font-family: var(--font-body);}
-    
-    @media (max-width: 768px) {
-        .grid { grid-template-columns: minmax(0, 1fr); max-width: 450px; margin: 0 auto; justify-items: center; }
-        .dashboard-container { padding: 0 1rem; }
-    }
-</style>
-<body>
-    <%- include('partials/header') %>
-    
-    <div class="dashboard-container">
-        
-        <div class="dashboard-split-layout">
-            
-            <!-- Left Panel (Headers & Form creation card) -->
-            <div class="dashboard-sidebar-panel">
-                <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem;">
-                    <h1 style="font-size: 2.5rem; font-weight: 400; line-height: 1.1; color: var(--text-primary);">Member Dashboard</h1>
-                    <p style="color: var(--text-secondary); margin-top: 0.5rem; font-size: 1.05rem;">Manage your active local listings.</p>
+        /* Upload Dropzone Styles conforming to our Beachside Glassmorphism Philosophy */
+        .upload-dropzone {
+            border: 2px dashed rgba(26, 54, 93, 0.2);
+            border-radius: 8px;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            transition: all 0.3s ease-in-out;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .upload-dropzone:hover,
+        .upload-dropzone.dragover {
+            border-color: var(--accent, #FF6B6B);
+            background: rgba(255, 255, 255, 0.7);
+            box-shadow: 0 8px 24px rgba(255, 107, 107, 0.05);
+        }
+
+        .upload-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 1rem;
+            color: var(--text-secondary, #718096);
+            opacity: 0.7;
+            transition: transform 0.3s ease;
+        }
+
+        .upload-dropzone:hover .upload-icon,
+        .upload-dropzone.dragover .upload-icon {
+            color: var(--accent, #FF6B6B);
+            transform: translateY(-2px);
+            opacity: 1;
+        }
+
+        .dropzone-text {
+            font-size: 0.95rem;
+            color: var(--text-primary, #2D3748);
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .dropzone-link {
+            color: var(--accent, #FF6B6B);
+            text-decoration: underline;
+            font-weight: 600;
+        }
+
+        .dropzone-subtext {
+            font-size: 0.75rem;
+            color: var(--text-secondary, #718096);
+        }
+
+        /* Image Preview Grid Styles */
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid var(--border-color, rgba(255, 255, 255, 0.3));
+            border-radius: 8px;
+        }
+
+        .preview-card {
+            position: relative;
+            border-radius: 6px;
+            overflow: hidden;
+            background: #FFFFFF;
+            border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: scaleUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes scaleUp {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .preview-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .preview-remove-btn {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: rgba(26, 32, 44, 0.85);
+            color: #FFFFFF;
+            border: none;
+            font-size: 14px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            line-height: 1;
+            transition: all 0.2s ease;
+            z-index: 10;
+        }
+
+        .preview-remove-btn:hover {
+            background: var(--accent, #FF6B6B);
+            transform: scale(1.1);
+        }
+
+        .preview-meta {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(26, 32, 44, 0.75);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            color: #FFFFFF;
+            padding: 4px 6px;
+            font-size: 10px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: minmax(0, 1fr);
+                max-width: 450px;
+                margin: 0 auto;
+                justify-items: center;
+            }
+
+            .dashboard-container {
+                padding: 0 1rem;
+            }
+        }
+    </style>
+
+    <body>
+        <%- include('partials/header') %>
+
+            <div class="dashboard-container">
+
+                <div class="dashboard-split-layout">
+
+                    <!-- Left Panel (Headers & Form creation card) -->
+                    <div class="dashboard-sidebar-panel">
+                        <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem;">
+                            <h1
+                                style="font-size: 2.5rem; font-weight: 400; line-height: 1.1; color: var(--text-primary);">
+                                Member Dashboard</h1>
+                            <p style="color: var(--text-secondary); margin-top: 0.5rem; font-size: 1.05rem;">Manage your
+                                active local listings.</p>
+                        </div>
+
+                        <div class="glass-panel" style="padding: 2.2rem; box-sizing: border-box; width: 100%;">
+                            <h3 style="margin-bottom: 1.5rem; font-size: 1.3rem;">Create New Listing</h3>
+                            <form action="/dashboard/item" method="POST" enctype="multipart/form-data">
+                                <div class="form-group">
+                                    <label>Item Title</label>
+                                    <input type="text" name="title" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Description</label>
+                                    <textarea name="description" rows="3" required></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label>Contact Via (e.g. FB Messenger, Line)</label>
+                                    <input type="text" name="contactInfo" placeholder="How buyers can reach you...">
+                                </div>
+                                <div style="display:flex; gap:1.2rem; flex-wrap: wrap;">
+                                    <div class="form-group" style="flex:1; min-width: 140px; margin-bottom: 0;">
+                                        <label>Price (¥)</label>
+                                        <input type="number" name="price" required>
+                                    </div>
+                                    <div class="form-group" style="flex:1; min-width: 140px; margin-bottom: 0;">
+                                        <label>Category</label>
+                                        <select name="category">
+                                            <option value="KITCHEN">Kitchen</option>
+                                            <option value="FURNITURE">Furniture</option>
+                                            <option value="APPLIANCES">Appliances</option>
+                                            <option value="CLOTHING">Clothing</option>
+                                            <option value="BOOKS">Books</option>
+                                            <option value="OTHERS">Others</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Modern Dynamic Multi-Image Drag-and-Drop Area -->
+                                <div class="form-group" style="margin-top: 1.5rem;">
+                                    <label>Item Images</label>
+
+                                    <!-- Interactive Dropzone -->
+                                    <div id="dropzone" class="upload-dropzone">
+                                        <svg class="upload-icon" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                        <p class="dropzone-text">Drag & drop your item photos here, or <span
+                                                class="dropzone-link">browse files</span></p>
+                                        <p class="dropzone-subtext">Supports PNG, JPG, JPEG, and WebP formats</p>
+
+                                        <!-- Hidden Native Multiple File Input -->
+                                        <input type="file" id="imageInput" name="images" accept="image/*" multiple
+                                            style="display: none;">
+                                    </div>
+
+                                    <!-- Live Preview Grid -->
+                                    <div id="previewContainer" class="preview-grid" style="display: none;">
+                                        <!-- Previews will be dynamically injected here -->
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn-primary"
+                                    style="width: 100%; padding: 12px; margin-top: 1rem;">Publish Listing</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Right Panel (Active Listings display grid) -->
+                    <div class="dashboard-main-panel">
+                        <h3
+                            style="margin-bottom: 1.8rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem; font-size: 1.5rem;">
+                            My Active Postings</h3>
+
+                        <div class="grid">
+                            <% if (typeof items !='undefined' && items.length> 0) { %>
+                                <% items.forEach(item=> { %>
+                                    <div class="card glass-panel"
+                                        data-item="<%= encodeURIComponent(JSON.stringify(item)) %>">
+                                        <% if (item.images && item.images.length> 0) { %>
+                                            <img src="<%= item.images[0] %>" alt="<%= item.title %>">
+                                            <% } else { %>
+                                                <div class="fallback-img"></div>
+                                                <% } %>
+                                                    <div class="card-content">
+                                                        <span
+                                                            style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; margin-bottom: 0.5rem; color: <%= item.status === 'AVAILABLE' ? 'var(--accent-success)' : 'var(--accent)' %>">
+                                                            <%= item.status==='AVAILABLE' ? item.status : 'RESERVED - '
+                                                                + (item.reserveeName || 'Unknown' ) %>
+                                                        </span>
+                                                        <h4
+                                                            style="font-size: 1.3rem; margin-bottom: 0.5rem; color: var(--text-primary);">
+                                                            <%= item.title %>
+                                                        </h4>
+                                                        <div
+                                                            style="font-weight: 700; font-size: 1.1rem; color: var(--text-secondary);">
+                                                            ¥<%= item.price.toLocaleString() %>
+                                                        </div>
+
+                                                        <div
+                                                            style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.75rem; border-top: 1px solid var(--border-color); padding-top: 0.75rem; margin-bottom: 1.5rem;">
+                                                            Seller: You
+                                                        </div>
+
+                                                        <div
+                                                            style="margin-top: auto; display:flex; gap:0.5rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+                                                            <% if (item.status==='RESERVED' ) { %>
+                                                                <form action="/dashboard/item/<%= item.id %>/clear"
+                                                                    method="POST" style="margin: 0; flex: 1;">
+                                                                    <button type="submit" class="dashboard-btn"
+                                                                        style="background: var(--text-secondary); width: 100%;">Clear</button>
+                                                                </form>
+                                                                <% } %>
+                                                                    <% if (item.status !=='SOLD' ) { %>
+                                                                        <button type="button" class="dashboard-btn"
+                                                                            style="background: var(--text-primary); flex: 1;"
+                                                                            onclick="openEditModal(this.closest('.card'))">Edit</button>
+                                                                        <form
+                                                                            action="/dashboard/item/<%= item.id %>/sold"
+                                                                            method="POST" style="margin: 0; flex: 1;">
+                                                                            <button type="submit" class="dashboard-btn"
+                                                                                style="background: var(--accent); width: 100%;">Mark
+                                                                                Sold</button>
+                                                                        </form>
+                                                                        <% } else { %>
+                                                                            <form
+                                                                                action="/dashboard/item/<%= item.id %>/unsold"
+                                                                                method="POST"
+                                                                                style="margin: 0; width: 100%;">
+                                                                                <button type="submit"
+                                                                                    class="dashboard-btn"
+                                                                                    style="background: #A0AEC0; width: 100%;">Mark
+                                                                                    Unsold</button>
+                                                                            </form>
+                                                                            <% } %>
+                                                        </div>
+                                                    </div>
+                                    </div>
+                                    <% }) %>
+                                        <% } else { %>
+                                            <div class="glass-panel"
+                                                style="grid-column: 1 / -1; padding: 4rem; text-align: center; border: 1px dashed var(--border-color); width: 100%; box-sizing: border-box;">
+                                                <p style="color: var(--text-secondary); font-style: italic;">You haven't
+                                                    posted any items yet.</p>
+                                            </div>
+                                            <% } %>
+                        </div>
+                    </div>
+
                 </div>
+            </div>
 
-                <div class="glass-panel" style="padding: 2.2rem; box-sizing: border-box; width: 100%;">
-                    <h3 style="margin-bottom: 1.5rem; font-size: 1.3rem;">Create New Listing</h3>
-                    <form action="/dashboard/item" method="POST" enctype="multipart/form-data">
+            <!-- Edit Modal Overlay -->
+            <div id="editModal"
+                style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; backdrop-filter: blur(5px);">
+                <div class="glass-panel"
+                    style="width: 90vw; max-width: 500px; max-height: 90vh; overflow-y: auto; overflow-x: hidden; position: relative; padding: 2.5rem; background: rgba(255,255,255,0.95); box-sizing: border-box;">
+                    <span onclick="document.getElementById('editModal').style.display='none'"
+                        style="position: absolute; top: 15px; right: 20px; font-size: 1.5rem; cursor: pointer; color: var(--text-secondary);">&times;</span>
+                    <h3 style="margin-bottom: 1.5rem; color: var(--text-primary);">Edit Listing</h3>
+
+                    <form id="editForm" method="POST" action="" enctype="multipart/form-data">
                         <div class="form-group">
                             <label>Item Title</label>
-                            <input type="text" name="title" required>
+                            <input type="text" name="title" id="editTitle" required>
                         </div>
+
                         <div class="form-group">
                             <label>Description</label>
-                            <textarea name="description" rows="3" required></textarea>
+                            <textarea name="description" id="editDescription" rows="3" required></textarea>
                         </div>
+
                         <div class="form-group">
-                            <label>Contact Via (e.g. FB Messenger, Line)</label>
-                            <input type="text" name="contactInfo" placeholder="How buyers can reach you...">
+                            <label>Contact Via (How should buyers reach you?)</label>
+                            <input type="text" name="contactInfo" id="editContactInfo"
+                                placeholder="e.g. LINE ID, FB Messenger...">
                         </div>
-                        <div style="display:flex; gap:1.2rem; flex-wrap: wrap;">
-                            <div class="form-group" style="flex:1; min-width: 140px; margin-bottom: 0;">
+
+                        <div class="form-group">
+                            <label>Manage Existing Images</label>
+                            <div id="editImageContainer"
+                                style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; padding-top: 1rem;"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Upload Additional Images (Optional)</label>
+                            <input type="file" name="newImages" accept="image/*" multiple style="padding: 8px;">
+                        </div>
+
+                        <div style="display:flex; gap:1rem; flex-wrap: wrap;">
+                            <div class="form-group" style="flex:1; min-width: 150px;">
                                 <label>Price (¥)</label>
-                                <input type="number" name="price" required>
+                                <input type="number" name="price" id="editPrice" required>
                             </div>
-                            <div class="form-group" style="flex:1; min-width: 140px; margin-bottom: 0;">
+                            <div class="form-group" style="flex:1; min-width: 150px;">
                                 <label>Category</label>
-                                <select name="category">
+                                <select name="category" id="editCategory">
                                     <option value="KITCHEN">Kitchen</option>
                                     <option value="FURNITURE">Furniture</option>
                                     <option value="APPLIANCES">Appliances</option>
@@ -140,174 +540,180 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="form-group" style="margin-top: 1.5rem;">
-                            <label>Upload Image</label>
-                            <input type="file" name="image" accept="image/*" required style="padding: 8px;">
-                        </div>
-                        <button type="submit" class="btn-primary" style="width: 100%; padding: 12px;">Publish Listing</button>
+
+                        <button type="submit" class="btn-primary" style="width: 100%;">Save Changes</button>
                     </form>
                 </div>
             </div>
 
-            <!-- Right Panel (Active Listings display grid) -->
-            <div class="dashboard-main-panel">
-                <h3 style="margin-bottom: 1.8rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem; font-size: 1.5rem;">My Active Postings</h3>
-                
-                <div class="grid">
-                    <% if (typeof items != 'undefined' && items.length > 0) { %>
-                        <% items.forEach(item => { %>
-                        <div class="card glass-panel" data-item="<%= encodeURIComponent(JSON.stringify(item)) %>">
-                            <% if (item.images && item.images.length > 0) { %>
-                                <img src="<%= item.images[0] %>" alt="<%= item.title %>">
-                            <% } else { %>
-                                <div class="fallback-img"></div>
-                            <% } %>
-                            <div class="card-content">
-                                <span style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; margin-bottom: 0.5rem; color: <%= item.status === 'AVAILABLE' ? 'var(--accent-success)' : 'var(--accent)' %>">
-                                    <%= item.status === 'AVAILABLE' ? item.status : 'RESERVED - ' + (item.reserveeName || 'Unknown') %>
-                                </span>
-                                <h4 style="font-size: 1.3rem; margin-bottom: 0.5rem; color: var(--text-primary);"><%= item.title %></h4>
-                                <div style="font-weight: 700; font-size: 1.1rem; color: var(--text-secondary);">¥<%= item.price.toLocaleString() %></div>
+            <%- include('partials/footer') %>
 
-                                <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.75rem; border-top: 1px solid var(--border-color); padding-top: 0.75rem; margin-bottom: 1.5rem;">
-                                    Seller: You
-                                </div>
+                <script>
+                    function openEditModal(cardElement) {
+                        const itemData = JSON.parse(decodeURIComponent(cardElement.getAttribute('data-item')));
 
-                                <div style="margin-top: auto; display:flex; gap:0.5rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
-                                    <% if (item.status === 'RESERVED') { %>
-                                        <form action="/dashboard/item/<%= item.id %>/clear" method="POST" style="margin: 0; flex: 1;">
-                                            <button type="submit" class="dashboard-btn" style="background: var(--text-secondary); width: 100%;">Clear</button>
-                                        </form>
-                                    <% } %>
-                                    <% if (item.status !== 'SOLD') { %>
-                                        <button type="button" class="dashboard-btn" style="background: var(--text-primary); flex: 1;" onclick="openEditModal(this.closest('.card'))">Edit</button>
-                                        <form action="/dashboard/item/<%= item.id %>/sold" method="POST" style="margin: 0; flex: 1;">
-                                            <button type="submit" class="dashboard-btn" style="background: var(--accent); width: 100%;">Mark Sold</button>
-                                        </form>
-                                    <% } else { %>
-                                        <form action="/dashboard/item/<%= item.id %>/unsold" method="POST" style="margin: 0; width: 100%;">
-                                            <button type="submit" class="dashboard-btn" style="background: #A0AEC0; width: 100%;">Mark Unsold</button>
-                                        </form>
-                                    <% } %>
-                                </div>
-                            </div>
-                        </div>
-                        <% }) %>
-                    <% } else { %>
-                        <div class="glass-panel" style="grid-column: 1 / -1; padding: 4rem; text-align: center; border: 1px dashed var(--border-color); width: 100%; box-sizing: border-box;">
-                            <p style="color: var(--text-secondary); font-style: italic;">You haven't posted any items yet.</p>
-                        </div>
-                    <% } %>
-                </div>
-            </div>
+                        // Standard Fields
+                        document.getElementById('editTitle').value = itemData.title;
+                        document.getElementById('editDescription').value = itemData.description;
+                        document.getElementById('editContactInfo').value = itemData.contactInfo || '';
+                        document.getElementById('editPrice').value = itemData.price;
+                        document.getElementById('editCategory').value = itemData.category;
+                        document.getElementById('editForm').action = `/dashboard/item/${itemData.id}/edit`;
 
-        </div>
-    </div>
+                        // Handle Existing Images & Deletion Input Construction
+                        const imageContainer = document.getElementById('editImageContainer');
+                        imageContainer.innerHTML = '';
 
-    <!-- Edit Modal Overlay -->
-    <div id="editModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; backdrop-filter: blur(5px);">
-        <div class="glass-panel" style="width: 90vw; max-width: 500px; max-height: 90vh; overflow-y: auto; overflow-x: hidden; position: relative; padding: 2.5rem; background: rgba(255,255,255,0.95); box-sizing: border-box;">
-            <span onclick="document.getElementById('editModal').style.display='none'" style="position: absolute; top: 15px; right: 20px; font-size: 1.5rem; cursor: pointer; color: var(--text-secondary);">&times;</span>
-            <h3 style="margin-bottom: 1.5rem; color: var(--text-primary);">Edit Listing</h3>
-            
-            <form id="editForm" method="POST" action="" enctype="multipart/form-data">
-                <div class="form-group">
-                    <label>Item Title</label>
-                    <input type="text" name="title" id="editTitle" required>
-                </div>
-                
-                <div class="form-group">
-                    <label>Description</label>
-                    <textarea name="description" id="editDescription" rows="3" required></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label>Contact Via (How should buyers reach you?)</label>
-                    <input type="text" name="contactInfo" id="editContactInfo" placeholder="e.g. LINE ID, FB Messenger...">
-                </div>
-                
-                <div class="form-group">
-                    <label>Manage Existing Images</label>
-                    <div id="editImageContainer" style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px;"></div>
-                </div>
-                
-                <div class="form-group">
-                    <label>Upload Additional Images (Optional)</label>
-                    <input type="file" name="newImages" accept="image/*" multiple style="padding: 8px;">
-                </div>
+                        if (itemData.images && itemData.images.length > 0) {
+                            itemData.images.forEach((imgUrl) => {
+                                const div = document.createElement('div');
+                                div.style = 'position: relative; width: 80px; height: 80px; flex-shrink: 0;';
 
-                <div style="display:flex; gap:1rem; flex-wrap: wrap;">
-                    <div class="form-group" style="flex:1; min-width: 150px;">
-                        <label>Price (¥)</label>
-                        <input type="number" name="price" id="editPrice" required>
-                    </div>
-                    <div class="form-group" style="flex:1; min-width: 150px;">
-                        <label>Category</label>
-                        <select name="category" id="editCategory">
-                            <option value="KITCHEN">Kitchen</option>
-                            <option value="FURNITURE">Furniture</option>
-                            <option value="APPLIANCES">Appliances</option>
-                            <option value="CLOTHING">Clothing</option>
-                            <option value="BOOKS">Books</option>
-                            <option value="OTHERS">Others</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <button type="submit" class="btn-primary" style="width: 100%;">Save Changes</button>
-            </form>
-        </div>
-    </div>
+                                const img = document.createElement('img');
+                                img.src = imgUrl;
+                                img.style = 'width: 100%; height: 100%; object-fit: cover; border-radius: 4px; border: 1px solid #ccc;';
 
-    <%- include('partials/footer') %>
+                                const hiddenInput = document.createElement('input');
+                                hiddenInput.type = 'hidden';
+                                hiddenInput.name = 'existingImages';
+                                hiddenInput.value = imgUrl;
 
-    <script>
-        function openEditModal(cardElement) {
-            const itemData = JSON.parse(decodeURIComponent(cardElement.getAttribute('data-item')));
-            
-            // Standard Fields
-            document.getElementById('editTitle').value = itemData.title;
-            document.getElementById('editDescription').value = itemData.description;
-            document.getElementById('editContactInfo').value = itemData.contactInfo || '';
-            document.getElementById('editPrice').value = itemData.price;
-            document.getElementById('editCategory').value = itemData.category;
-            document.getElementById('editForm').action = `/dashboard/item/${itemData.id}/edit`;
-            
-            // Handle Existing Images & Deletion Input Construction
-            const imageContainer = document.getElementById('editImageContainer');
-            imageContainer.innerHTML = '';
-            
-            if (itemData.images && itemData.images.length > 0) {
-                itemData.images.forEach((imgUrl) => {
-                    const div = document.createElement('div');
-                    div.style = 'position: relative; width: 80px; height: 80px; flex-shrink: 0;';
-                    
-                    const img = document.createElement('img');
-                    img.src = imgUrl;
-                    img.style = 'width: 100%; height: 100%; object-fit: cover; border-radius: 4px; border: 1px solid #ccc;';
-                    
-                    const hiddenInput = document.createElement('input');
-                    hiddenInput.type = 'hidden';
-                    hiddenInput.name = 'existingImages';
-                    hiddenInput.value = imgUrl;
-                    
-                    const removeBtn = document.createElement('button');
-                    removeBtn.innerHTML = '&times;';
-                    removeBtn.type = 'button';
-                    removeBtn.style = 'position: absolute; top: -5px; right: -5px; background: #FF6B6B; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 14px; line-height: 1; padding: 0;';
-                    removeBtn.onclick = () => div.remove(); 
-                    
-                    div.appendChild(img);
-                    div.appendChild(hiddenInput);
-                    div.appendChild(removeBtn);
-                    imageContainer.appendChild(div);
-                });
-            } else {
-                imageContainer.innerHTML = '<p style="font-size: 0.8rem; color: #718096; margin: 0;">No existing images.</p>';
-            }
+                                const removeBtn = document.createElement('button');
+                                removeBtn.innerHTML = '&times;';
+                                removeBtn.type = 'button';
+                                removeBtn.style = 'position: absolute; top: -5px; right: -5px; background: #FF6B6B; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 14px; line-height: 1; padding: 0;';
+                                removeBtn.onclick = () => div.remove();
 
-            document.getElementById('editModal').style.display = 'flex';
-        }
-    </script>
-</body>
+                                div.appendChild(img);
+                                div.appendChild(hiddenInput);
+                                div.appendChild(removeBtn);
+                                imageContainer.appendChild(div);
+                            });
+                        } else {
+                            imageContainer.innerHTML = '<p style="font-size: 0.8rem; color: #718096; margin: 0;">No existing images.</p>';
+                        }
+
+                        document.getElementById('editModal').style.display = 'flex';
+                    }
+
+                    document.addEventListener("DOMContentLoaded", function () {
+                        const dropzone = document.getElementById("dropzone");
+                        const fileInput = document.getElementById("imageInput");
+                        const previewContainer = document.getElementById("previewContainer");
+
+                        // In-memory array of selected files
+                        let selectedFiles = [];
+
+                        // Trigger click on file input when clicking the dropzone
+                        dropzone.addEventListener("click", () => fileInput.click());
+
+                        // Drag over effects
+                        dropzone.addEventListener("dragover", (e) => {
+                            e.preventDefault();
+                            dropzone.classList.add("dragover");
+                        });
+
+                        dropzone.addEventListener("dragleave", () => {
+                            dropzone.classList.remove("dragover");
+                        });
+
+                        // Handle files dropped directly onto dropzone
+                        dropzone.addEventListener("drop", (e) => {
+                            e.preventDefault();
+                            dropzone.classList.remove("dragover");
+                            if (e.dataTransfer.files.length > 0) {
+                                handleNewFiles(e.dataTransfer.files);
+                            }
+                        });
+
+                        // Handle files selected via file dialog
+                        fileInput.addEventListener("change", () => {
+                            if (fileInput.files.length > 0) {
+                                handleNewFiles(fileInput.files);
+                            }
+                        });
+
+                        // Handle appending selected files, filtering for image formats
+                        function handleNewFiles(files) {
+                            const imageFiles = Array.from(files).filter(file => file.type.startsWith("image/"));
+
+                            if (imageFiles.length === 0) return;
+
+                            // Append new images to state
+                            selectedFiles = [...selectedFiles, ...imageFiles];
+                            updateDOMState();
+                        }
+
+                        // Update both the DOM Previews and synchronize the file list input
+                        function updateDOMState() {
+                            // Clear previous previews
+                            previewContainer.innerHTML = "";
+
+                            if (selectedFiles.length === 0) {
+                                previewContainer.style.display = "none";
+                                fileInput.files = new DataTransfer().files; // Reset file list
+                                fileInput.required = true; // Ensure validation rules trigger if empty
+                                return;
+                            }
+
+                            // Make preview grid visible
+                            previewContainer.style.display = "grid";
+                            fileInput.required = false; // We have images in memory, remove browser alert block
+
+                            // Rebuild the data transfer file list dynamically
+                            const dataTransfer = new DataTransfer();
+
+                            selectedFiles.forEach((file, index) => {
+                                // Append file to dataTransfer builder
+                                dataTransfer.items.add(file);
+
+                                // Generate an ephemeral Blob URL for previewing locally
+                                const objectUrl = URL.createObjectURL(file);
+
+                                // Generate Preview Card Element
+                                const card = document.createElement("div");
+                                card.className = "preview-card";
+
+                                const img = document.createElement("img");
+                                img.src = objectUrl;
+                                img.alt = file.name;
+
+                                // Garbage collect memory once image renders in view
+                                img.onload = () => URL.revokeObjectURL(objectUrl);
+
+                                // Generate Cancel button
+                                const removeBtn = document.createElement("button");
+                                removeBtn.type = "button";
+                                removeBtn.className = "preview-remove-btn";
+                                removeBtn.innerHTML = "&times;";
+                                removeBtn.title = "Cancel upload";
+                                removeBtn.addEventListener("click", (e) => {
+                                    e.stopPropagation(); // Avoid triggering dropzone select dialog
+                                    removeImage(index);
+                                });
+
+                                // Metadata overlay
+                                const meta = document.createElement("div");
+                                meta.className = "preview-meta";
+                                meta.innerText = file.name;
+
+                                card.appendChild(img);
+                                card.appendChild(removeBtn);
+                                card.appendChild(meta);
+                                previewContainer.appendChild(card);
+                            });
+
+                            // Mutate native input files property with constructed list
+                            fileInput.files = dataTransfer.files;
+                        }
+
+                        // Remove specific image by array index
+                        function removeImage(index) {
+                            selectedFiles.splice(index, 1);
+                            updateDOMState();
+                        }
+                    });
+                </script>
+    </body>
+
 </html>
