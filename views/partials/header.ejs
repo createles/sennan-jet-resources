@@ -16,7 +16,7 @@
             <a href="/dashboard" style="color: var(--text-primary); text-decoration: none; font-weight: 700; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase;">Dashboard</a>
             <!-- LOG OUT Replaces LOG IN when authenticated -->
             <form action="/auth/logout" method="POST" style="margin: 0;">
-                <button type="submit" class="btn-primary" style="background-color: var(--accent); border-color: var(--accent);">Log Out</button>
+                <button type="submit" class="btn-primary btn-logout" style="background-color: var(--accent); border-color: var(--accent);" data-name="<%= typeof userName !== 'undefined' && userName ? userName : 'User' %>"></button>
             </form>
         <% } else { %>
             <a href="/auth/login" class="btn-primary">Log In</a>
