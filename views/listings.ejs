@@ -19,9 +19,17 @@
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem; width: 100%; box-sizing: border-box;}
     
     /* Single Column Mobile Safety */
-    .card { overflow: hidden; display: flex; flex-direction: column; cursor: pointer; transition: transform 0.4s ease, border-color 0.4s ease; padding: 0; box-sizing: border-box; max-width: 100%; width: 100%;}
-    .card:hover { transform: translateY(-5px); border-color: var(--accent); }
+    .card { overflow: hidden; display: flex; flex-direction: column; cursor: pointer; transition: transform 0.3s ease-out, border-color 0.3s ease-out, box-shadow 0.3s ease-out; padding: 0; box-sizing: border-box; max-width: 100%; width: 100%;}
+    .card:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
     .card img { width: 100%; height: 220px; object-fit: cover; border-bottom: 1px solid var(--border-color); }
+
+    .card .fallback-img {
+        width: 100%; min-width: 100%; height: 220px;
+        border-radius: 4px 4px 0 0;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+    }
+
     .card-content { padding: 1.5rem; display: flex; flex-direction: column; flex: 1; box-sizing: border-box; overflow: hidden;}
     .card-content p, .card-content h3 { overflow-wrap: break-word; word-wrap: break-word;}
     .card.reserved-card img { filter: grayscale(40%) opacity(0.8); }
@@ -86,10 +94,11 @@
                         <div class="card glass-panel <%= item.status === 'RESERVED' ? 'reserved-card' : '' %>" 
                              data-item="<%= encodeURIComponent(JSON.stringify(item)) %>" onclick="openModal(this)">
                              
-                            <img src="<%= item.images && item.images[0] ? item.images[0] : 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'300\' viewBox=\'0 0 400 300\'%3E%3Crect width=\'100%25\' height=\'100%25\' fill=\'%23f1f5f9\'/%3E%3Cpath d=\'M150 200 L200 130 L250 180 L280 150 L320 220 Z\' fill=\'%23cbd5e1\'/%3E%3Ccircle cx=\'180\' cy=\'120\' r=\'20\' fill=\'%23cbd5e1\'/%3E%3C/svg%3E' %>" 
-                                 alt="<%= item.title %>"
-                                 onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'300\' viewBox=\'0 0 400 300\'%3E%3Crect width=\'100%25\' height=\'100%25\' fill=\'%23f1f5f9\'/%3E%3Cpath d=\'M150 200 L200 130 L250 180 L280 150 L320 220 Z\' fill=\'%23cbd5e1\'/%3E%3Ccircle cx=\'180\' cy=\'120\' r=\'20\' fill=\'%23cbd5e1\'/%3E%3C/svg%3E';">
-                            
+                            <% if (item.images && item.images.length > 0) { %>
+                                <img src="<%= item.images[0] %>" alt="<%= item.title %>">
+                            <% } else { %>
+                                <div class="fallback-img"></div>
+                            <% } %>
                             <div class="card-content">
                                 <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem;">
                                     <span style="color: var(--text-secondary); font-size: 0.7rem; font-weight: 700; text-transform: uppercase;"><%= item.category %></span>
@@ -145,7 +154,7 @@
     <%- include('partials/footer') %>
 
     <script>
-        const fallbackSVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='100%25' height='100%25' fill='%23f1f5f9'/%3E%3Cpath d='M150 200 L200 130 L250 180 L280 150 L320 220 Z' fill='%23cbd5e1'/%3E%3Ccircle cx='180' cy='120' r='20' fill='%23cbd5e1'/%3E%3C/svg%3E";
+        const fallbackSVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect width='100%25' height='100%25' fill='%23F7FAFC'/%3E%3Ctext x='50%25' y='50%25' font-size='72' dominant-baseline='middle' text-anchor='middle'%3E%F0%9F%93%A6%3C/text%3E%3C/svg%3E";
         let currentImages = [];
         let currentImageIndex = 0;
 

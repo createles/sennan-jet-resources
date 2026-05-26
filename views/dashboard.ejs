@@ -73,9 +73,17 @@
     }
     
     /* Listing Cards */
-    .card { overflow: hidden; display: flex; flex-direction: column; transition: transform 0.4s ease, border-color 0.4s ease; padding: 0; box-sizing: border-box; max-width: 100%; width: 100%;}
-    .card:hover { transform: translateY(-5px); border-color: var(--accent); }
+    .card { overflow: hidden; display: flex; flex-direction: column; transition: transform 0.3s ease-out, border-color 0.3s ease-out, box-shadow 0.3s ease-out; padding: 0; box-sizing: border-box; max-width: 100%; width: 100%;}
+    .card:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
     .card img { width: 100%; height: 200px; object-fit: cover; border-bottom: 1px solid var(--border-color); }
+
+    .card .fallback-img {
+        width: 100%; min-width: 100%; height: 200px;
+        border-radius: 4px 4px 0 0;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+    }
+
     .card-content { padding: 1.5rem; display: flex; flex-direction: column; flex: 1; box-sizing: border-box; overflow: hidden;}
     .card-content h4, .card-content p { overflow-wrap: break-word; word-wrap: break-word;}
 
@@ -149,13 +157,14 @@
                     <% if (typeof items != 'undefined' && items.length > 0) { %>
                         <% items.forEach(item => { %>
                         <div class="card glass-panel" data-item="<%= encodeURIComponent(JSON.stringify(item)) %>">
-                            <img src="<%= item.images && item.images[0] ? item.images[0] : 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'300\' viewBox=\'0 0 400 300\'%3E%3Crect width=\'100%25\' height=\'100%25\' fill=\'%23f1f5f9\'/%3E%3Cpath d=\'M150 200 L200 130 L250 180 L280 150 L320 220 Z\' fill=\'%23cbd5e1\'/%3E%3Ccircle cx=\'180\' cy=\'120\' r=\'20\' fill=\'%23cbd5e1\'/%3E%3C/svg%3E' %>" 
-                                 alt="<%= item.title %>"
-                                 onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'300\' viewBox=\'0 0 400 300\'%3E%3Crect width=\'100%25\' height=\'100%25\' fill=\'%23f1f5f9\'/%3E%3Cpath d=\'M150 200 L200 130 L250 180 L280 150 L320 220 Z\' fill=\'%23cbd5e1\'/%3E%3Ccircle cx=\'180\' cy=\'120\' r=\'20\' fill=\'%23cbd5e1\'/%3E%3C/svg%3E';">
-                            
+                            <% if (item.images && item.images.length > 0) { %>
+                                <img src="<%= item.images[0] %>" alt="<%= item.title %>">
+                            <% } else { %>
+                                <div class="fallback-img"></div>
+                            <% } %>
                             <div class="card-content">
                                 <span style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; margin-bottom: 0.5rem; color: <%= item.status === 'AVAILABLE' ? 'var(--accent-success)' : 'var(--accent)' %>">
-                                    <%= item.status === 'AVAILABLE' ? item.status : 'RESERVED - ' + item.reserveeName %>
+                                    <%= item.status === 'AVAILABLE' ? item.status : 'RESERVED - ' + (item.reserveeName || 'Unknown') %>
                                 </span>
                                 <h4 style="font-size: 1.3rem; margin-bottom: 0.5rem; color: var(--text-primary);"><%= item.title %></h4>
                                 <div style="font-weight: 700; font-size: 1.1rem; color: var(--text-secondary);">¥<%= item.price.toLocaleString() %></div>
