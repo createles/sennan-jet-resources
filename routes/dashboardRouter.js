@@ -110,14 +110,14 @@ dashboardRouter.post('/item', upload.single('image'), async (req, res) => {
 dashboardRouter.post('/item/:id/clear', async (req, res) => {
     try {
         // Verify ownership and update status
-        await prisma.item.update({
+        await prisma.item.updateMany({
             where: {
                 id: req.params.id,
                 userId: req.session.userId // Security check: Ensure the user owns this item
             },
             data: {
                 status: 'AVAILABLE',
-                reserveeName: null // Remove the reservee's name
+                reserveeId: null // Remove the reservee's id
             }
         });
         
@@ -132,7 +132,7 @@ dashboardRouter.post('/item/:id/clear', async (req, res) => {
 dashboardRouter.post('/item/:id/sold', async (req, res) => {
     try {
         // Verify ownership and update status
-        await prisma.item.update({
+        await prisma.item.updateMany({
             where: {
                 id: req.params.id,
                 userId: req.session.userId // Security check: Ensure the user owns this item
@@ -153,14 +153,14 @@ dashboardRouter.post('/item/:id/sold', async (req, res) => {
 dashboardRouter.post('/item/:id/unsold', async (req, res) => {
     try {
         // Verify ownership and update status
-        await prisma.item.update({
+        await prisma.item.updateMany({
             where: {
                 id: req.params.id,
                 userId: req.session.userId // Security check: Ensure the user owns this item
             },
             data: {
                 status: 'AVAILABLE',
-                reserveeName: null // Clear reservee name when marking as unsold
+                reserveeId: null // Clear reservee name when marking as unsold
             }
         });
         
@@ -186,7 +186,7 @@ dashboardRouter.post('/item/:id/edit', upload.array('newImages'), async (req, re
 
     try {
         // FETCH THE CURRENT STATE OF THE ITEM FROM POSTGRESQL
-        const currentItem = await prisma.item.findUnique({
+        const currentItem = await prisma.item.findFirst({
             where: { id: itemId, userId: req.session.userId }
         });
 
@@ -244,7 +244,7 @@ dashboardRouter.post('/item/:id/edit', upload.array('newImages'), async (req, re
         }
 
         // UPDATE THE DATABASE WITH THE FINAL OPTIMIZED ARRAY
-        await prisma.item.update({
+        await prisma.item.updateMany({
             where: {
                 id: itemId,
                 userId: req.session.userId 
