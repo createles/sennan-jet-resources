@@ -23,6 +23,8 @@ model Item {
   id           String      @id @default(uuid())
   title        String
   description  String      @db.Text
+  notes        String?
+  originalPrice Float?
   price        Float
   category     Category
   images       String[]
