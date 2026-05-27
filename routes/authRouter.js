@@ -23,7 +23,8 @@ authRouter.post('/register', async (req, res) => {
     res.redirect('/');
   } catch (error) {
     console.error(error);
-    res.status(400).send('Registration failed. Email might already be in use.');
+    req.flash('error_msg', 'Registration failed. Email might already be in use.');
+    res.redirect('/register');
   }
 });
 
@@ -42,11 +43,13 @@ authRouter.post('/login', async (req, res) => {
       req.session.userName = user.name.split(' ')[0]; // Store first name
       res.redirect('/dashboard');
     } else {
-      res.status(401).send('Invalid email or password.');
+      req.flash('error_msg', 'Invalid email or password.');
+      res.redirect('/login');
     }
   } catch (error) {
     console.error(error);
-    res.status(500).send('Server error.');
+    req.flash('error_msg', 'Server error.');
+    res.redirect('/login');
   }
 });
 
