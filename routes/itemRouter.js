@@ -56,16 +56,19 @@ itemRouter.post('/:id/reserve', authenticateUser, async (req, res) => {
         });
 
         if (!item) {
-            return res.status(404).send("Item not found");
+            req.flash('error_msg', 'Item not found');
+            return res.redirect('/listings');
         }
 
         if (item.status !== 'AVAILABLE') {
-            return res.status(400).send("Item is already reserved or sold");
+            req.flash('error_msg', 'Item is already reserved or sold');
+            return res.redirect('/listings');
         }
 
         // Prevent sellers from reserving their own items
         if (item.userId === userId) {
-            return res.status(400).send("You cannot reserve your own item");
+            req.flash('error_msg', 'You cannot reserve your own item');
+            return res.redirect('/listings');
         }
 
         // Update item with reserveeId and status
@@ -77,10 +80,12 @@ itemRouter.post('/:id/reserve', authenticateUser, async (req, res) => {
             }
         });
 
+        req.flash('success_msg', 'Item reserved successfully!');
         res.redirect('/listings');
     } catch (error) {
         console.error("Error reserving item:", error);
-        res.status(500).send("Internal Server Error");
+        req.flash('error_msg', 'Error reserving item.');
+        res.redirect('/listings');
     }
 });
 
@@ -95,12 +100,14 @@ itemRouter.post('/:id/unreserve', authenticateUser, async (req, res) => {
         });
 
         if (!item) {
-            return res.status(404).send("Item not found");
+            req.flash('error_msg', 'Item not found');
+            return res.redirect('/listings');
         }
 
         // Verify that the person attempting to unreserve is the actual reservee
         if (item.reserveeId !== userId) {
-            return res.status(403).send("You are not authorized to unreserve this item");
+            req.flash('error_msg', 'You are not authorized to unreserve this item');
+            return res.redirect('/listings');
         }
 
         // Clear reservation details
@@ -112,10 +119,12 @@ itemRouter.post('/:id/unreserve', authenticateUser, async (req, res) => {
             }
         });
 
+        req.flash('success_msg', 'Reservation cancelled successfully!');
         res.redirect('/listings');
     } catch (error) {
         console.error("Error unreserving item:", error);
-        res.status(500).send("Internal Server Error");
+        req.flash('error_msg', 'Error unreserving item.');
+        res.redirect('/listings');
     }
 });
 export default itemRouter;

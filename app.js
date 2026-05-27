@@ -4,6 +4,7 @@ import express from 'express';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import session from 'express-session';
+import flash from 'connect-flash';
 import authRouter from './routes/authRouter.js';
 import itemRouter from './routes/itemRouter.js';
 import dashboardRouter from './routes/dashboardRouter.js';
@@ -32,6 +33,18 @@ app.use(session({
   saveUninitialized: false,
   cookie: { secure: false, maxAge: 1000 * 60 * 60 * 24 } // 1 day
 }));
+
+// Connect-Flash Middleware
+app.use(flash());
+
+// Expose flash messages to views
+app.use((req, res, next) => {
+  const success_msg = req.flash('success_msg');
+  const error_msg = req.flash('error_msg');
+  res.locals.success_msg = success_msg.length > 0 ? success_msg[0] : null;
+  res.locals.error_msg = error_msg.length > 0 ? error_msg[0] : null;
+  next();
+});
 
 // Auth routes
 app.use('/auth', authRouter);

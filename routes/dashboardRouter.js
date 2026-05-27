@@ -106,10 +106,12 @@ dashboardRouter.post('/item', upload.array('images', 5), async (req, res) => {
             }
         });
 
+        req.flash('success_msg', 'Listing created successfully!');
         res.redirect('/dashboard');
     } catch (error) {
         console.error("Error creating item with multiple images:", error);
-        res.status(500).send("Error creating item. Please check your images.");
+        req.flash('error_msg', 'Error creating item. Please check your images.');
+        res.redirect('/dashboard');
     }
 });
 
@@ -128,10 +130,12 @@ dashboardRouter.post('/item/:id/clear', async (req, res) => {
             }
         });
         
+        req.flash('success_msg', 'Reservation cleared.');
         res.redirect('/dashboard');
     } catch (error) {
         console.error("Failed to clear reservation:", error);
-        res.status(500).send("Error clearing reservation.");
+        req.flash('error_msg', 'Error clearing reservation.');
+        res.redirect('/dashboard');
     }
 });
 
@@ -149,10 +153,12 @@ dashboardRouter.post('/item/:id/sold', async (req, res) => {
             }
         });
         
+        req.flash('success_msg', 'Item marked as sold.');
         res.redirect('/dashboard');
     } catch (error) {
         console.error("Failed to mark item as sold:", error);
-        res.status(500).send("Error updating item status.");
+        req.flash('error_msg', 'Error updating item status.');
+        res.redirect('/dashboard');
     }
 });
 
@@ -171,10 +177,12 @@ dashboardRouter.post('/item/:id/unsold', async (req, res) => {
             }
         });
         
+        req.flash('success_msg', 'Item marked as unsold.');
         res.redirect('/dashboard');
     } catch (error) {
         console.error("Failed to mark item as unsold:", error);
-        res.status(500).send("Error updating item status.");
+        req.flash('error_msg', 'Error updating item status.');
+        res.redirect('/dashboard');
     }
 });
 
@@ -198,7 +206,8 @@ dashboardRouter.post('/item/:id/edit', upload.array('newImages'), async (req, re
         });
 
         if (!currentItem) {
-            return res.status(404).send("Item not found or unauthorized.");
+            req.flash('error_msg', 'Item not found or unauthorized.');
+            return res.redirect('/dashboard');
         }
 
         // IDENTIFY DISCARDED IMAGES FOR SUPABASE CLEANUP
@@ -266,10 +275,12 @@ dashboardRouter.post('/item/:id/edit', upload.array('newImages'), async (req, re
             }
         });
 
+        req.flash('success_msg', 'Item updated successfully.');
         res.redirect('/dashboard');
     } catch (error) {
         console.error("Failed to update item and manage assets:", error);
-        res.status(500).send("Error updating item details.");
+        req.flash('error_msg', 'Error updating item details.');
+        res.redirect('/dashboard');
     }
 });
 

@@ -1,0 +1,40 @@
+<style>
+  .toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .toast {
+    padding: 15px 20px;
+    border-radius: 6px;
+    color: #fff;
+    font-family: var(--font-body, sans-serif);
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    animation: fadeOut 5s forwards;
+    min-width: 250px;
+    text-align: center;
+  }
+  .toast.success { background-color: var(--accent-success, #48BB78); }
+  .toast.error { background-color: var(--accent, #F56565); }
+  
+  @keyframes fadeOut {
+    0% { opacity: 0; transform: translateY(-10px); }
+    10% { opacity: 1; transform: translateY(0); }
+    80% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(-10px); display: none; }
+  }
+</style>
+
+<div class="toast-container">
+  <% if (typeof success_msg !== 'undefined' && success_msg) { %>
+    <div class="toast success"><%= success_msg %></div>
+  <% } %>
+  <% if (typeof error_msg !== 'undefined' && error_msg) { %>
+    <div class="toast error"><%= error_msg %></div>
+  <% } %>
+</div>
