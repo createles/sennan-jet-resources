@@ -284,4 +284,51 @@ dashboardRouter.post('/item/:id/edit', upload.array('newImages'), async (req, re
     }
 });
 
+// POST: Delete Item
+dashboardRouter.post('/item/:id/delete', async (req, res) => {
+    const itemId = req.params.id;
+
+    try {
+        // Fetch the item to get the list of associated images for cleanup
+        const itemToDelete = await prisma.item.findFirst({
+            where: { id: itemId, userId: req.session.userId }
+        });
+
+        if (!itemToDelete) {
+            req.flash('error_msg', 'Item not found or unauthorized.');
+            return res.redirect('/dashboard');
+        }
+
+        // Extract filenames from the public URLs for Supabase deletion
+        const fileNamesToDelete = itemToDelete.images.map(imgUrl => {
+            const parts = imgUrl.split('/');
+            return parts[parts.length - 1];
+        });
+        
+        // Delete the item record from PostgreSQL
+        await prisma.item.deleteMany({
+            where: { id: itemId, userId: req.session.userId }
+        });
+
+        // Trigger the Supabase Storage removal call for all associated images
+        if (fileNamesToDelete.length > 0) {
+            const { error: storageError } = await supabase.storage
+                .from('item-images')
+                .remove(fileNamesToDelete);
+
+            if (storageError) {
+                console.error("Supabase file deletion warning:", storageError);
+                // Log the error but don't halt the process, ensuring the database deletion still succeeds
+            }
+        }
+
+        req.flash('success_msg', 'Item deleted successfully.');
+        res.redirect('/dashboard');
+    } catch (error) {
+        console.error("Failed to delete item and associated assets:", error);
+        req.flash('error_msg', 'Error deleting item.');
+        res.redirect('/dashboard');
+    }
+});
+
 export default dashboardRouter;
