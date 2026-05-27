@@ -86,7 +86,7 @@
                 <a href="/listings?category=FURNITURE" class="<%= typeof currentCategory != 'undefined' && currentCategory === 'FURNITURE' ? 'active' : '' %>">Furniture</a>
                 <a href="/listings?category=APPLIANCES" class="<%= typeof currentCategory != 'undefined' && currentCategory === 'APPLIANCES' ? 'active' : '' %>">Appliances</a>
                 <a href="/listings?category=CLOTHING" class="<%= typeof currentCategory != 'undefined' && currentCategory === 'CLOTHING' ? 'active' : '' %>">Clothing</a>
-                <a href="/listings?category=OTHERS" class="<%= typeof currentCategory != 'undefined' && currentCategory === 'OTHERS' ? 'active' : '' %>">Others Items</a>
+                <a href="/listings?category=OTHERS" class="<%= typeof currentCategory != 'undefined' && currentCategory === 'OTHERS' ? 'active' : '' %>">Others</a>
             </aside>
 
             <main class="grid">
@@ -108,8 +108,18 @@
                                     <% } %>
                                 </div>
                                 <h3 style="font-size: 1.4rem; font-weight: 600; margin-bottom: 0.5rem;"><%= item.title %></h3>
+                                <% if (item.notes) { %>
+                                    <small style="color: var(--text-secondary); font-size: 0.85em; margin-bottom: 0.5rem; display: block;"><%= item.notes %></small>
+                                <% } %>
                                 <p style="font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 1.2rem; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;"><%= item.description %></p>
-                                <div style="font-size: 1.3rem; font-weight: 700; color: var(--text-primary); margin-top: auto;">¥<%= item.price.toLocaleString() %></div>
+                                <div style="font-size: 1.3rem; font-weight: 700; color: var(--text-primary); margin-top: auto;">
+                                    ¥<%= item.price.toLocaleString() %>
+                                    <% if (item.originalPrice) { %>
+                                        <small style="text-decoration: line-through; margin-left: 0.5rem; font-weight: normal; font-size: 0.8rem; color: var(--text-secondary);">
+                                            ¥<%= item.originalPrice.toLocaleString() %>
+                                        </small>
+                                    <% } %>
+                                </div>
                                 
                                 <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.75rem; border-top: 1px solid var(--border-color); padding-top: 0.75rem;">
                                     Seller: <%= item.user ? item.user.name : 'Unknown' %>
@@ -139,9 +149,13 @@
                 <span id="modalCategory" style="color: var(--text-secondary); font-size: 0.7rem; font-weight: 700; text-transform: uppercase;"></span>
                 <span id="modalReservedStatus" style="color: var(--accent); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; display: none;"></span>
             </div>
-            <h2 id="modalTitle" style="margin-top: 0.5rem; font-size: 2rem;"></h2>
+            <h2 id="modalTitle" style="margin-top: 0.5rem; font-size: 2rem; margin-bottom: 0.2rem;"></h2>
+            <div id="modalNotes" style="color: var(--text-secondary); font-size: 0.9em; margin-bottom: 1rem; display: none;"></div>
             <p id="modalDescription" style="color: var(--text-secondary); line-height: 1.5; margin: 1rem 0; word-wrap: break-word; overflow-wrap: break-word;"></p>
-            <div id="modalPrice" style="font-size: 1.3rem; font-weight: 700;"></div>
+            <div style="display: flex; align-items: baseline; gap: 0.5rem;">
+                <div id="modalPrice" style="font-size: 1.3rem; font-weight: 700;"></div>
+                <div id="modalOriginalPrice" style="text-decoration: line-through; color: var(--text-secondary); font-size: 0.9rem; display: none;"></div>
+            </div>
             
             <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
                 Seller Name: <span id="modalSeller" style="font-weight: 700; color: var(--text-primary);"></span> <br>
@@ -170,6 +184,22 @@
             document.getElementById('modalSeller').innerText = itemData.user ? itemData.user.name : 'Unknown';
             document.getElementById('modalContactInfo').innerText = itemData.contactInfo || 'Not Provided';
             
+            const modalNotes = document.getElementById('modalNotes');
+            if (itemData.notes) {
+                modalNotes.innerText = itemData.notes;
+                modalNotes.style.display = 'block';
+            } else {
+                modalNotes.style.display = 'none';
+            }
+
+            const modalOriginalPrice = document.getElementById('modalOriginalPrice');
+            if (itemData.originalPrice) {
+                modalOriginalPrice.innerText = '¥' + itemData.originalPrice.toLocaleString();
+                modalOriginalPrice.style.display = 'block';
+            } else {
+                modalOriginalPrice.style.display = 'none';
+            }
+
             const statusTag = document.getElementById('modalReservedStatus');
             const reserveUI = document.getElementById('reserveUI');
             
@@ -186,7 +216,7 @@
 
                 reserveUI.innerHTML = `
                     <p style="text-align: center; font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem;">You must be logged in to reserve listings.</p>
-                    <a href="/auth/login" class="btn-primary" style="text-align: center; padding: 0.9rem; display: block; text-decoration: none;">Log in to reserve this item</a>
+                    <a href="/auth/login" class="btn-primary" style="text-align: center; padding: 0.9rem; display: block; text-decoration: none;">Log in</a>
                 `;
             } 
             // 2. User IS logged in
