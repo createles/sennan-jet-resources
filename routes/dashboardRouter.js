@@ -47,7 +47,7 @@ dashboardRouter.get('/', async (req, res) => {
 
 // POST Create new item with Multiple Image Uploads
 dashboardRouter.post('/item', upload.array('images', 5), async (req, res) => {
-    const { title, description, price, category, contactInfo } = req.body;
+    const { title, description, notes, originalPrice, price, category, contactInfo } = req.body;
     let imageUrls = [];
 
     try {
@@ -98,6 +98,8 @@ dashboardRouter.post('/item', upload.array('images', 5), async (req, res) => {
             data: {
                 title,
                 description,
+                notes: notes || null,
+                originalPrice: originalPrice ? parseFloat(originalPrice) : null,
                 price: parseFloat(price),
                 category: category.toUpperCase(),
                 images: imageUrls, // Store the array of string URLs
@@ -188,7 +190,7 @@ dashboardRouter.post('/item/:id/unsold', async (req, res) => {
 
 // POST: Edit Item Details
 dashboardRouter.post('/item/:id/edit', upload.array('newImages'), async (req, res) => {
-    const { title, description, price, category, contactInfo } = req.body;
+    const { title, description, notes, originalPrice, price, category, contactInfo } = req.body;
     const itemId = req.params.id;
     
     // Parse the list of images the user decided to keep from the frontend
@@ -268,6 +270,8 @@ dashboardRouter.post('/item/:id/edit', upload.array('newImages'), async (req, re
             data: {
                 title: title,
                 description: description,
+                notes: notes || null,
+                originalPrice: originalPrice ? parseFloat(originalPrice) : null,
                 price: parseFloat(price),
                 category: category.toUpperCase(),
                 images: finalImages, // Saves only the active images
