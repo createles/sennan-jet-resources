@@ -5,7 +5,7 @@
         /* Widened layout to give the split columns breathing room */
         .dashboard-container {
             max-width: 1400px;
-            margin: 3rem auto;
+            margin: 2rem auto;
             padding: 0 2rem;
             flex: 1;
             position: relative;
@@ -339,6 +339,30 @@
             opacity: 1;
         }
 
+        .profile-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .profile-controls button {
+            background: var(--accent);
+            color: white; 
+            border: none; 
+            padding: 0.3rem 0.8rem; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            font-size: 0.75rem;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .profile-controls button:hover {
+            background-color: var(--text-primary);
+            transform: translateY(-2px);
+        }
+
         @media (max-width: 768px) {
             .grid {
                 grid-template-columns: minmax(0, 1fr);
@@ -363,6 +387,19 @@
 
                     <!-- Left Panel (Headers & Form creation card) -->
                     <div class="dashboard-sidebar-panel">
+
+                        <div class="profile-controls">
+                            <div style="display: flex; align-items: center; gap: 1rem;">
+                                <div style="display: flex; flex-direction: column; gap: 0.5rem; align-items: center; justify-content: center;">
+                                    <h3 style="color: var(--text-primary); margin: 0.25rem 0; font-style: italic; font-weight: 400;"> How's it going,
+                                        <span style="color: var(--accent);">
+                                            <%= userName %>
+                                        </span>?</h3>
+                                    <button type="button" onclick="openEditNameModal()">Edit Name</button>
+                                </div>
+                            </div>
+                        </div>
+
                         <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem;">
                             <h1
                                 style="font-size: 2.5rem; font-weight: 400; line-height: 1.1; color: var(--text-primary);">
@@ -541,6 +578,20 @@
 
                 </div>
             </div>
+
+            <!-- Edit Name Modal Overlay -->
+            <form action="/dashboard/edit-name" method="POST" id="editNameModal"
+                style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center;">
+                <div class="glass-panel" style="width: 90vw; max-width: 400px; padding: 2rem; position: relative;">
+                    <span onclick="document.getElementById('editNameModal').style.display='none'"
+                        style="position: absolute; top: 15px; right: 20px; font-size: 1.5rem; cursor: pointer; color: var(--text-secondary);">&times;</span>
+                    <h3 style="margin-bottom: 0.8rem; color: var(--text-primary);">Edit Name</h3>
+                    <input type="text" name="name" value="<%= fullName %>" required
+                        style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 4px; margin-bottom: 1.5rem; box-sizing: border-box;">
+                    <button type="submit" class="btn-primary" style="width: 100%; padding: 12px;">Save
+                        Changes</button>
+                </div>
+            </form>
 
             <!-- Edit Modal Overlay -->
             <div id="editModal"
@@ -780,6 +831,10 @@
                             updateDOMState();
                         }
                     });
+
+                    function openEditNameModal() {
+                        document.getElementById('editNameModal').style.display = 'flex';
+                    }
                 </script>
     </body>
 

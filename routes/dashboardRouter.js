@@ -37,7 +37,8 @@ dashboardRouter.get('/', async (req, res) => {
         res.render('dashboard', { title: 'My Dashboard | Sennan City JETs',
             user: req.session.userId,
             items: populatedItems,
-            userName: req.session.userName || null
+            userName: req.session.userName || null,
+            fullName: req.session.fullName || null,
         });
     } catch (error) {
         console.error(error);
@@ -331,6 +332,28 @@ dashboardRouter.post('/item/:id/delete', async (req, res) => {
     } catch (error) {
         console.error("Failed to delete item and associated assets:", error);
         req.flash('error_msg', 'Error deleting item.');
+        res.redirect('/dashboard');
+    }
+});
+
+dashboardRouter.post('/edit-name', async (req, res) => {
+    const { name } = req.body;
+
+    try {
+        await prisma.user.update({
+            where: { id: req.session.userId },
+            data: { name: name }
+        });
+
+        // Update the session with the new name
+        req.session.userName = name.split(' ')[0]; // Update first name in session
+        req.session.fullName = name;
+
+        req.flash('success_msg', 'Name updated successfully.');
+        res.redirect('/dashboard');
+    } catch (error) {
+        console.error("Failed to update user name:", error);
+        req.flash('error_msg', 'Error updating name.');
         res.redirect('/dashboard');
     }
 });
