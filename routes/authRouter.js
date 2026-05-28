@@ -19,6 +19,7 @@ authRouter.post('/register', async (req, res) => {
       data: { name, email, password: hashedPassword }
     });
     req.session.userId = user.id; // Log them in immediately
+    req.session.fullName = user.name; // Store full name for later use
     req.session.userName = name.split(' ')[0]; // Store first name
     res.redirect('/');
   } catch (error) {
@@ -40,6 +41,7 @@ authRouter.post('/login', async (req, res) => {
     const user = await prisma.user.findUnique({ where: { email } });
     if (user && await compare(password, user.password)) {
       req.session.userId = user.id;
+      req.session.fullName = user.name; // Store full name for later use
       req.session.userName = user.name.split(' ')[0]; // Store first name
       res.redirect('/dashboard');
     } else {
