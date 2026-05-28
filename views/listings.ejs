@@ -42,10 +42,17 @@
     .close-btn { position: fixed; top: 0.3rem; right: 1rem; font-size: 1.8rem; cursor: pointer; color: var(--text-secondary); transition: color 0.3s; }
     .close-btn:hover { color: var(--accent); }
     
+    #modalImage { transition: opacity 0.3s ease-out; opacity: 1; }
+    #modalImage.fade { opacity: 0; }
+
     .carousel { position: relative; margin-bottom: 1.5rem; background-color: #F1F5F9; border-radius: 4px; overflow: hidden; border: 1px solid var(--border-color); padding: 0.5rem }
     .carousel img { width: 100%; height: 320px; object-fit: contain; display: block; }
     .carousel-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(26, 32, 44, 0.8); color: white; border: none; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 50%; transition: background-color 0.3s; }
     .carousel-btn:hover { background-color: var(--accent); }
+
+    .carousel-indicators { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; }
+    .carousel-indicator { width: 10px; height: 10px; border-radius: 50%; background: rgba(0, 0, 0, 0.3); transition: background 0.3s; cursor: pointer; border: 1px solid rgba(255,255,255,0.5); }
+    .carousel-indicator.active { background: var(--accent); border-color: var(--accent); }
 
     .reserve-form-container { margin-top: 1.5rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem; display: flex; flex-direction: column; gap: 0.8rem; }
 
@@ -140,9 +147,10 @@
         <div class="modal-content glass-panel" style="background: rgba(255,255,255,0.95);">
             <span class="close-btn" onclick="closeModal()">&times;</span>
             <div class="carousel">
-                <button class="carousel-btn" style="left: 12px;" onclick="changeImage(-1, event)">&#10094;</button>
+                <button id="prevImageBtn" class="carousel-btn" style="left: 12px; display: none;" onclick="changeImage(-1, event)">&#10094;</button>
                 <img id="modalImage" src="" alt="Listing Image">
-                <button class="carousel-btn" style="right: 12px;" onclick="changeImage(1, event)">&#10095;</button>
+                <button id="nextImageBtn" class="carousel-btn" style="right: 12px; display: none;" onclick="changeImage(1, event)">&#10095;</button>
+                <div id="carouselIndicators" class="carousel-indicators"></div>
             </div>
             
             <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
@@ -274,6 +282,8 @@
             const modal = document.getElementById('itemModal');
             modal.style.display = 'flex';
             setTimeout(() => modal.classList.add('active'), 10);
+
+            updateCarouselUI();
         }
 
         function closeModal() {
@@ -288,10 +298,53 @@
 
         function changeImage(direction, event) {
             event.stopPropagation();
-            currentImageIndex = (currentImageIndex + direction + currentImages.length) % currentImages.length;
             
             const modalImageElement = document.getElementById('modalImage');
-            modalImageElement.src = currentImages[currentImageIndex];
+            modalImageElement.classList.add('fade');
+            
+            setTimeout(() => {
+                currentImageIndex += direction;
+                if (currentImageIndex < 0) currentImageIndex = 0;
+                if (currentImageIndex >= currentImages.length) currentImageIndex = currentImages.length - 1;
+                
+                modalImageElement.src = currentImages[currentImageIndex];
+                updateCarouselUI();
+                modalImageElement.classList.remove('fade');
+            }, 300); // 300ms matches the CSS transition duration
+        }
+        
+        function updateCarouselUI() {
+            const prevBtn = document.getElementById('prevImageBtn');
+            const nextBtn = document.getElementById('nextImageBtn');
+            const indicatorsContainer = document.getElementById('carouselIndicators');
+            
+            if (currentImages.length > 1) {
+                prevBtn.style.display = currentImageIndex > 0 ? 'flex' : 'none';
+                nextBtn.style.display = currentImageIndex < currentImages.length - 1 ? 'flex' : 'none';
+                
+                indicatorsContainer.innerHTML = '';
+                currentImages.forEach((_, idx) => {
+                    const dot = document.createElement('div');
+                    dot.className = `carousel-indicator ${idx === currentImageIndex ? 'active' : ''}`;
+                    dot.onclick = (e) => {
+                        e.stopPropagation();
+                        const modalImageElement = document.getElementById('modalImage');
+                        modalImageElement.classList.add('fade');
+                        setTimeout(() => {
+                            currentImageIndex = idx;
+                            modalImageElement.src = currentImages[currentImageIndex];
+                            updateCarouselUI();
+                            modalImageElement.classList.remove('fade');
+                        }, 300);
+                    };
+                    indicatorsContainer.appendChild(dot);
+                });
+                indicatorsContainer.style.display = 'flex';
+            } else {
+                prevBtn.style.display = 'none';
+                nextBtn.style.display = 'none';
+                indicatorsContainer.style.display = 'none';
+            }
         }
     </script>
 </body>
