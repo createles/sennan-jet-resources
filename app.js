@@ -9,6 +9,7 @@ import authRouter from './routes/authRouter.js';
 import itemRouter from './routes/itemRouter.js';
 import dashboardRouter from './routes/dashboardRouter.js';
 import indexRouter from './routes/indexRouter.js';
+import messageBoardRouter from './routes/messageBoardRouter.js';
 
 const PORT = process.env.PORT || 3000;
 const __filename = fileURLToPath(import.meta.url);
@@ -54,6 +55,8 @@ app.use('/listings', itemRouter);
 
 // Dashboard routes
 app.use('/dashboard', dashboardRouter);
+
+app.use('/board', messageBoardRouter);
 
 // Homepage route
 app.use('/', indexRouter);

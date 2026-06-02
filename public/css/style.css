@@ -158,8 +158,27 @@ footer {
 /* Narrower, tighter container for breathing room */
 .container { max-width: 850px; margin: 4.5rem auto; padding: 0 2.5rem; }
 
+/* Smooth Grid-based Height Expansion for Comments */
+.comments-wrapper {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.4s ease;
+}
+
+.comments-wrapper.expanded {
+  grid-template-rows: 1fr;
+}
+
+.comments-inner {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+
 /* Increased Spacing Between Sections */
-.preview-section, .guide-section, .community-section { margin-bottom: 3rem; max-width: 100%; box-sizing: border-box; }
+.preview-section, .guide-section, .community-section, .board-section { margin-bottom: 3rem; max-width: 100%; box-sizing: border-box; }
 
 .section-header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1px solid var(--border-color); padding-bottom: 1.2rem; margin-bottom: 2rem; }
 .section-header h2 { font-size: 2.3rem; font-weight: 400; }

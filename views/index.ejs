@@ -17,7 +17,6 @@
     </section>
 
     <div class="container">
-        
         <section class="preview-section section-target" data-theme="#F4D35E">
             <div class="section-header">
                 <h2>Marketplace Highlights</h2>
@@ -125,6 +124,36 @@
             </div>
         </section>
 
+        <section class="board-section section-target" data-theme="#A78BFA" style="max-width: 800px; margin: 4rem auto; padding: 0 1rem;">
+            <div class="section-header">
+                <h2>Community Board</h2>
+            </div>
+        
+            <% if (locals.user) { %>
+                <div class="glass-panel" style="padding: 1.5rem; margin-bottom: 2rem;">
+                    <form id="newPostForm" style="display: flex; gap: 1rem; align-items: flex-start;">
+                        <textarea id="postContent" required placeholder="Share an announcement..."
+                            style="flex: 1; padding: 1rem; border: 1px solid var(--border-color); border-radius: 8px; resize: none; background: rgba(255,255,255,0.8);"></textarea>
+                        <button type="submit" class="view-all"
+                            style="background: var(--text-primary); color: white; padding: 0.8rem 1.5rem; border: none; border-radius: 6px; font-weight: 700; cursor: pointer;">Post</button>
+                    </form>
+                </div>
+            <% } else { %>
+                <div class="glass-panel" style="padding: 1.5rem; text-align: center; margin-bottom: 2rem;">
+                    <p style="margin: 0; color: var(--text-secondary);">Please <a href="/login" style="color: var(--accent); font-weight: 700; text-decoration: none;">Log In</a> to drop announcements.</p>
+                </div>
+            <% } %>
+        
+            <div id="boardFeed" style="display: flex; flex-direction: column; gap: 1.5rem; max-height: 600px; overflow-y: auto; padding-right: 0.5rem;">
+                <!-- Posts injected here via JS -->
+            </div>
+        
+            <div style="text-align: center; margin-top: 2rem;">
+                <button id="loadMoreBtn" class="view-all"
+                    style="display: none; background: transparent; color: var(--text-primary); border: 2px solid var(--text-primary); padding: 0.6rem 2rem; border-radius: 6px; cursor: pointer; font-weight: 700;">Load More</button>
+            </div>
+        </section>
+
     </div>
 
     <%- include('partials/footer') %>
@@ -146,12 +175,231 @@
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         const newColor = entry.target.getAttribute('data-theme');
-                        root.style.setProperty('--accent', newColor);
+                        if(newColor) root.style.setProperty('--accent', newColor);
                     }
                 });
             }, { root: null, rootMargin: '0px', threshold: 0.35 });
             sections.forEach(section => observer.observe(section));
         });
+
+        // Message Board Script
+            let skip = 0;
+            const take = 3;
+            let currentUserId = null;
+            const boardFeed = document.getElementById('boardFeed');
+            const loadMoreBtn = document.getElementById('loadMoreBtn');
+            const newPostForm = document.getElementById('newPostForm');
+
+            // Initialization
+            document.addEventListener('DOMContentLoaded', () => {
+                fetchPosts();
+            });
+
+            // Fetch Posts API Call
+            async function fetchPosts() {
+                try {
+                    const res = await fetch(`/board/api/posts?skip=${skip}&take=${take}`);
+                    const data = await res.json();
+                    currentUserId = data.currentUserId;
+
+                    // Fallback for empty board state
+                    if (data.posts.length === 0 && skip === 0) {
+                        boardFeed.innerHTML = `
+                            <div class="glass-panel" style="padding: 3rem; text-align: center; border: 1px dashed var(--border-color);">
+                                <p style="color: var(--text-secondary); margin: 0; font-style: italic;">No announcements posted yet. Be the first!</p>
+                            </div>
+                        `;
+                        if (loadMoreBtn) loadMoreBtn.style.display = 'none';
+                        return;
+                    }
+
+                    data.posts.forEach(post => {
+                        boardFeed.insertAdjacentHTML('beforeend', generatePostHTML(post));
+                    });
+
+                    skip += data.posts.length;
+
+                    if (data.posts.length < take) {
+                        if (loadMoreBtn) loadMoreBtn.style.display = 'none';
+                    } else {
+                        if (loadMoreBtn) loadMoreBtn.style.display = 'inline-block';
+                    }
+                } catch (err) {
+                    console.error('Error fetching posts:', err);
+                }
+            }
+
+            // Generate HTML for a Post
+            function generatePostHTML(post) {
+                const dateStr = new Date(post.createdAt).toLocaleDateString();
+                
+                let latestCommentHTML = '';
+                let olderCommentsHTML = '';
+                
+                if (post.comments.length > 0) {
+                    const latest = post.comments[0];
+                    latestCommentHTML = `
+                      <div style="font-size: 0.85rem; padding-bottom: 0.5rem;">
+                        <strong>${latest.user.name}:</strong> <span style="color: var(--text-secondary);">${latest.content}</span>
+                      </div>
+                    `;
+                    
+                    const older = post.comments.slice(1);
+                    if (older.length > 0) {
+                        olderCommentsHTML = older.map(c => `
+                          <div style="font-size: 0.85rem; padding-bottom: 0.5rem;">
+                            <strong>${c.user.name}:</strong> <span style="color: var(--text-secondary);">${c.content}</span>
+                          </div>
+                        `).join('');
+                    }
+                }
+
+                const commentFormHTML = currentUserId ? `
+      <form onsubmit="submitComment(event, '${post.id}')" style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+        <input type="text" name="content" required placeholder="Write a comment..." style="flex: 1; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.85rem;">
+        <button type="submit" style="background: var(--text-primary); color: white; border: none; border-radius: 4px; padding: 0 1rem; font-weight: 700; cursor: pointer; font-size: 0.8rem;">Reply</button>
+      </form>
+    ` : '<p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.5rem;">Log in to comment.</p>';
+
+                return `
+      <div class="glass-panel" id="post-${post.id}" style="padding: 1.5rem; position: relative;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 1rem;">
+          <div>
+            <h4 style="margin: 0; font-family: var(--font-header);">${post.user.name}</h4>
+            <span style="font-size: 0.75rem; color: var(--text-secondary);">${dateStr}</span>
+          </div>
+          ${currentUserId === post.userId ? `
+            <button onclick="deletePost('${post.id}')" style="background: transparent; border: none; color: #EF4444; font-size: 0.75rem; font-weight: 700; cursor: pointer; text-transform: uppercase;">Delete</button>
+          ` : ''}
+        </div>
+        <p style="margin: 0 0 1rem 0; font-size: 0.95rem; line-height: 1.5; white-space: pre-wrap;">${post.content}</p>
+        
+        <div id="older-comments-wrapper-${post.id}" style="display: ${post.comments.length > 1 ? 'block' : 'none'}; margin-bottom: 0.5rem;">
+            <button onclick="toggleComments('${post.id}')" style="background: none; border: none; color: var(--accent); font-weight: 700; cursor: pointer; font-size: 0.85rem; padding: 0; display: flex; align-items: center; gap: 0.3rem;">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+              View previous comments (<span id="count-${post.id}">${Math.max(0, post.comments.length - 1)}</span>)
+            </button>
+            <div id="older-comments-${post.id}" style="display: none; flex-direction: column; gap: 0.5rem; margin-top: 0.5rem; padding: 1rem; background: rgba(255,255,255,0.4); border-radius: 6px;">
+              ${olderCommentsHTML}
+            </div>
+        </div>
+        
+        <div id="latest-comment-${post.id}">
+          ${latestCommentHTML}
+        </div>
+
+        ${commentFormHTML}
+      </div>
+    `;
+            }
+
+            // Event Listeners
+            if (loadMoreBtn) loadMoreBtn.addEventListener('click', fetchPosts);
+
+            if (newPostForm) {
+                newPostForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const contentInput = document.getElementById('postContent');
+                    try {
+                        const res = await fetch('/board/api/post', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ content: contentInput.value })
+                        });
+                        const newPost = await res.json();
+                        
+                        // Remove empty state fallback if it exists before appending
+                        const fallbackMsg = boardFeed.querySelector('.glass-panel p');
+                        if (fallbackMsg && fallbackMsg.innerText.includes('No announcements')) {
+                            boardFeed.innerHTML = '';
+                        }
+
+                        boardFeed.insertAdjacentHTML('afterbegin', generatePostHTML(newPost));
+                        contentInput.value = '';
+                        skip++; // Offset adjustment
+                    } catch (err) {
+                        console.error(err);
+                    }
+                });
+            }
+
+            // Interactions
+            window.toggleComments = function (postId) {
+                const list = document.getElementById(`older-comments-${postId}`);
+                if (list.style.display === 'none') {
+                    list.style.display = 'flex';
+                } else {
+                    list.style.display = 'none';
+                }
+            };
+
+            window.submitComment = async function (e, postId) {
+                e.preventDefault();
+                const input = e.target.querySelector('input[name="content"]');
+                try {
+                    const res = await fetch(`/board/api/post/${postId}/comment`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ content: input.value })
+                    });
+                    const newComment = await res.json();
+
+                    const latestContainer = document.getElementById(`latest-comment-${postId}`);
+                    const olderList = document.getElementById(`older-comments-${postId}`);
+                    const wrapper = document.getElementById(`older-comments-wrapper-${postId}`);
+                    const countSpan = document.getElementById(`count-${postId}`);
+
+                    if (latestContainer.firstElementChild) {
+                        olderList.insertAdjacentHTML('afterbegin', latestContainer.innerHTML);
+                        wrapper.style.display = 'block';
+                        if (countSpan) countSpan.innerText = parseInt(countSpan.innerText || 0) + 1;
+                    }
+
+                    latestContainer.innerHTML = `
+                        <div style="font-size: 0.85rem; padding-bottom: 0.5rem;">
+                            <strong>${newComment.user.name}:</strong> <span style="color: var(--text-secondary);">${newComment.content}</span>
+                        </div>
+                    `;
+
+                    input.value = '';
+                } catch (err) {
+                    console.error(err);
+                }
+            };
+
+            window.deletePost = async function (postId) {
+                if (!confirm('Delete this announcement?')) return;
+
+                try {
+                    const res = await fetch(`/board/api/post/${postId}`, {
+                        method: 'DELETE',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+
+                    const result = await res.json();
+
+                    if (res.ok) {
+                        // Instantly drop the element from the feed
+                        const postElement = document.getElementById(`post-${postId}`);
+                        if (postElement) postElement.remove();
+                        skip--; // Adjust offset backwards on deletion
+
+                        // Inject empty state if feed is completely clear
+                        if (boardFeed.children.length === 0) {
+                            boardFeed.innerHTML = `
+                                <div class="glass-panel" style="padding: 3rem; text-align: center; border: 1px dashed var(--border-color);">
+                                    <p style="color: var(--text-secondary); margin: 0; font-style: italic;">No announcements posted yet. Be the first!</p>
+                                </div>
+                            `;
+                        }
+                    } else {
+                        console.error(result.error);
+                        alert(result.error || 'Failed to delete post.');
+                    }
+                } catch (err) {
+                    console.error(err);
+                }
+            };
     </script>
 </body>
 </html>
