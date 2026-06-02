@@ -17,6 +17,8 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   items     Item[]
+  posts Post[]
+  comments Comment[]
 }
 
 model Item {
@@ -35,6 +37,26 @@ model Item {
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
   contactInfo  String?     
+}
+
+model Post {
+  id        String    @id @default(uuid())
+  content   String    @db.Text
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comments  Comment[]
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+  postId String
+  post   Post  @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum Category {
