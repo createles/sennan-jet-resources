@@ -4,7 +4,7 @@ import { authenticateUser } from '../middleware/authMiddleware.js';
 
 const messageBoardRouter = Router();
 
-// GET: Fetch paginated posts
+// Fetch paginated posts
 messageBoardRouter.get('/api/posts', async (req, res) => {
   const skip = parseInt(req.query.skip) || 0;
   const take = parseInt(req.query.take) || 3;
@@ -18,8 +18,10 @@ messageBoardRouter.get('/api/posts', async (req, res) => {
         user: { select: { name: true } },
         comments: {
           orderBy: { createdAt: 'desc' },
+          take: 3,
           include: { user: { select: { name: true } } }
-        }
+        },
+        _count: { select: { comments: true } }
       }
     });
     res.json({ posts, currentUserId: req.session.userId || null });
@@ -51,6 +53,25 @@ messageBoardRouter.post('/api/post/:id/comment', authenticateUser, async (req, r
     res.json(comment);
   } catch (error) {
     res.status(500).json({ error: 'Failed to add comment' });
+  }
+});
+
+// GET: Fetch paginated comments for a post
+messageBoardRouter.get('/api/post/:id/comments', async (req, res) => {
+  const skip = parseInt(req.query.skip) || 0;
+  const take = parseInt(req.query.take) || 5;
+
+  try {
+    const comments = await prisma.comment.findMany({
+      where: { postId: req.params.id },
+      skip,
+      take,
+      orderBy: { createdAt: 'desc' },
+      include: { user: { select: { name: true } } }
+    });
+    res.json(comments);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch comments' });
   }
 });
 

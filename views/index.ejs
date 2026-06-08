@@ -229,28 +229,44 @@
                 }
             }
 
+            // Helper to format Date & Time
+            function formatTimestamp(dateString) {
+                if (!dateString) return '';
+                const d = new Date(dateString);
+                return d.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
+            }
+
             // Generate HTML for a Post
             function generatePostHTML(post) {
                 const dateStr = new Date(post.createdAt).toLocaleDateString();
                 
-                let latestCommentHTML = '';
-                let olderCommentsHTML = '';
+                let commentsHTML = '';
+                let viewMoreBtnHTML = '';
                 
-                if (post.comments.length > 0) {
-                    const latest = post.comments[0];
-                    latestCommentHTML = `
-                      <div style="font-size: 0.85rem; padding-bottom: 0.5rem;">
-                        <strong>${latest.user.name}:</strong> <span style="color: var(--text-secondary);">${latest.content}</span>
-                      </div>
-                    `;
-                    
-                    const older = post.comments.slice(1);
-                    if (older.length > 0) {
-                        olderCommentsHTML = older.map(c => `
-                          <div style="font-size: 0.85rem; padding-bottom: 0.5rem;">
-                            <strong>${c.user.name}:</strong> <span style="color: var(--text-secondary);">${c.content}</span>
+                if (post.comments && post.comments.length > 0) {
+                    commentsHTML = post.comments.map((c, i) => {
+                        return `
+                          <div class="comment-item-${post.id}" style="display: block; font-size: 0.8rem; padding-bottom: 0.5rem; margin-bottom: 0.5rem; border-bottom: 1px solid rgba(0,0,0,0.05);">
+                            <div style="display: flex; justify-content: flex-start; gap: 0.5rem; align-items: center; margin-bottom: 0.2rem;">
+                              <strong>${c.user.name}</strong>
+                              <span style="font-size: 0.7rem; color: var(--text-secondary);">${formatTimestamp(c.createdAt)}</span>
+                            </div>
+                            <p style="color: var(--text-secondary); margin: 0.5rem 0;">${c.content}</p>
                           </div>
-                        `).join('');
+                        `;
+                    }).join('');
+
+                    if (post._count && post._count.comments > 3) {
+                        viewMoreBtnHTML = `
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <button id="view-more-btn-${post.id}" onclick="loadMoreComments('${post.id}')" data-skip="3" data-total="${post._count.comments}" style="background: none; border: none; color: var(--accent); font-weight: 700; cursor: pointer; font-size: 0.85rem; padding: 0.5rem 0; text-align: left;">
+                                  View comments (${post._count.comments - 3} more)
+                                </button>
+                                <button id="hide-comments-btn-${post.id}" onclick="hideComments('${post.id}')" style="display: none; background: none; border: none; color: var(--text-secondary); font-weight: 700; cursor: pointer; font-size: 0.85rem; padding: 0.5rem 0; text-align: right;">
+                                  Hide comments
+                                </button>
+                            </div>
+                        `;
                     }
                 }
 
@@ -259,11 +275,11 @@
         <input type="text" name="content" required placeholder="Write a comment..." style="flex: 1; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.85rem;">
         <button type="submit" style="background: var(--text-primary); color: white; border: none; border-radius: 4px; padding: 0 1rem; font-weight: 700; cursor: pointer; font-size: 0.8rem;">Reply</button>
       </form>
-    ` : '<p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.5rem;">Log in to comment.</p>';
+    ` : '<p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.5rem; justify-self: center;">Log in to comment.</p>';
 
                 return `
       <div class="glass-panel" id="post-${post.id}" style="padding: 1.5rem; position: relative;">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 1rem;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 0.5rem; margin-bottom: 0.5rem;">
           <div>
             <h4 style="margin: 0; font-family: var(--font-header);">${post.user.name}</h4>
             <span style="font-size: 0.75rem; color: var(--text-secondary);">${dateStr}</span>
@@ -272,21 +288,14 @@
             <button onclick="deletePost('${post.id}')" style="background: transparent; border: none; color: #EF4444; font-size: 0.75rem; font-weight: 700; cursor: pointer; text-transform: uppercase;">Delete</button>
           ` : ''}
         </div>
-        <p style="margin: 0 0 1rem 0; font-size: 0.95rem; line-height: 1.5; white-space: pre-wrap;">${post.content}</p>
-        
-        <div id="older-comments-wrapper-${post.id}" style="display: ${post.comments.length > 1 ? 'block' : 'none'}; margin-bottom: 0.5rem;">
-            <button onclick="toggleComments('${post.id}')" style="background: none; border: none; color: var(--accent); font-weight: 700; cursor: pointer; font-size: 0.85rem; padding: 0; display: flex; align-items: center; gap: 0.3rem;">
-              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
-              View previous comments (<span id="count-${post.id}">${Math.max(0, post.comments.length - 1)}</span>)
-            </button>
-            <div id="older-comments-${post.id}" style="display: none; flex-direction: column; gap: 0.5rem; margin-top: 0.5rem; padding: 1rem; background: rgba(255,255,255,0.4); border-radius: 6px;">
-              ${olderCommentsHTML}
-            </div>
+        <div style="background: rgba(255, 255, 255, 0.6); border: 1px solid rgba(0, 0, 0, 0.05); box-shadow: 0 2px 4px rgba(0,0,0,0.02); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+            <p style="margin: 0; font-size: 0.95rem; line-height: 1.5; white-space: pre-wrap;">${post.content}</p>
         </div>
         
-        <div id="latest-comment-${post.id}">
-          ${latestCommentHTML}
+        <div id="comments-list-${post.id}" style="display: flex; flex-direction: column; margin-top: 0.5rem;">
+          ${commentsHTML}
         </div>
+        ${viewMoreBtnHTML}
 
         ${commentFormHTML}
       </div>
@@ -324,12 +333,66 @@
             }
 
             // Interactions
-            window.toggleComments = function (postId) {
-                const list = document.getElementById(`older-comments-${postId}`);
-                if (list.style.display === 'none') {
-                    list.style.display = 'flex';
-                } else {
-                    list.style.display = 'none';
+            window.loadMoreComments = async function (postId) {
+                const btn = document.getElementById(`view-more-btn-${postId}`);
+                if (!btn) return;
+                
+                const skip = parseInt(btn.getAttribute('data-skip') || '3');
+                const total = parseInt(btn.getAttribute('data-total') || '0');
+                const take = 5;
+                
+                try {
+                    const res = await fetch(`/board/api/post/${postId}/comments?skip=${skip}&take=${take}`);
+                    const comments = await res.json();
+                    
+                    const list = document.getElementById(`comments-list-${postId}`);
+                    const newCommentsHTML = comments.map(c => `
+                        <div class="comment-item-${postId}" style="display: block; font-size: 0.8rem; padding-bottom: 0.5rem; margin-bottom: 0.5rem; border-bottom: 1px solid rgba(0,0,0,0.05);">
+                            <div style="display: flex; justify-content: flex-start; gap: 0.5rem; align-items: center; margin-bottom: 0.2rem;">
+                                <strong>${c.user.name}</strong>
+                                <span style="font-size: 0.7rem; color: var(--text-secondary);">${formatTimestamp(c.createdAt)}</span>
+                            </div>
+                            <span style="color: var(--text-secondary);">${c.content}</span>
+                        </div>
+                    `).join('');
+                    
+                    list.insertAdjacentHTML('beforeend', newCommentsHTML);
+                    
+                    const newSkip = skip + comments.length;
+                    btn.setAttribute('data-skip', newSkip);
+                    
+                    if (newSkip >= total) {
+                        btn.style.display = 'none';
+                    } else {
+                        btn.innerText = `View more comments (${total - newSkip} more)`;
+                    }
+                    
+                    const hideBtn = document.getElementById(`hide-comments-btn-${postId}`);
+                    if (hideBtn) hideBtn.style.display = 'inline-block';
+                } catch (err) {
+                    console.error('Error loading more comments:', err);
+                }
+            };
+            
+            window.hideComments = function (postId) {
+                const allComments = document.querySelectorAll(`.comment-item-${postId}`);
+                // Revert to showing only the top 3 comments by removing appended comments from the DOM
+                allComments.forEach((el, index) => {
+                    if (index >= 3) el.remove();
+                });
+                
+                const viewMoreBtn = document.getElementById(`view-more-btn-${postId}`);
+                const hideBtn = document.getElementById(`hide-comments-btn-${postId}`);
+                
+                if (viewMoreBtn) {
+                    const total = parseInt(viewMoreBtn.getAttribute('data-total') || '0');
+                    viewMoreBtn.setAttribute('data-skip', '3');
+                    viewMoreBtn.innerText = `View comments (${Math.max(0, total - 3)} more)`;
+                    viewMoreBtn.style.display = 'inline-block';
+                }
+                
+                if (hideBtn) {
+                    hideBtn.style.display = 'none';
                 }
             };
 
@@ -344,22 +407,30 @@
                     });
                     const newComment = await res.json();
 
-                    const latestContainer = document.getElementById(`latest-comment-${postId}`);
-                    const olderList = document.getElementById(`older-comments-${postId}`);
-                    const wrapper = document.getElementById(`older-comments-wrapper-${postId}`);
-                    const countSpan = document.getElementById(`count-${postId}`);
-
-                    if (latestContainer.firstElementChild) {
-                        olderList.insertAdjacentHTML('afterbegin', latestContainer.innerHTML);
-                        wrapper.style.display = 'block';
-                        if (countSpan) countSpan.innerText = parseInt(countSpan.innerText || 0) + 1;
-                    }
-
-                    latestContainer.innerHTML = `
-                        <div style="font-size: 0.85rem; padding-bottom: 0.5rem;">
-                            <strong>${newComment.user.name}:</strong> <span style="color: var(--text-secondary);">${newComment.content}</span>
+                    const list = document.getElementById(`comments-list-${postId}`);
+                    
+                    const newCommentHTML = `
+                        <div class="comment-item-${postId}" style="display: block; font-size: 0.8rem; padding-bottom: 0.5rem; margin-bottom: 0.5rem; border-bottom: 1px solid rgba(0,0,0,0.05);">
+                            <div style="display: flex; justify-content: flex-start; gap: 0.5rem; align-items: center; margin-bottom: 0.2rem;">
+                                <strong>${newComment.user.name}</strong>
+                                <span style="font-size: 0.7rem; color: var(--text-secondary);">${formatTimestamp(newComment.createdAt || new Date())}</span>
+                            </div>
+                            <span style="color: var(--text-secondary);">${newComment.content}</span>
                         </div>
                     `;
+
+                    list.insertAdjacentHTML('afterbegin', newCommentHTML);
+
+                    const btn = document.getElementById(`view-more-btn-${postId}`);
+                    if (btn) {
+                        const currentSkip = parseInt(btn.getAttribute('data-skip') || '3');
+                        const currentTotal = parseInt(btn.getAttribute('data-total') || '0');
+                        btn.setAttribute('data-skip', currentSkip + 1);
+                        btn.setAttribute('data-total', currentTotal + 1);
+                        if (btn.style.display !== 'none') {
+                            btn.innerText = `View more comments (${currentTotal + 1 - (currentSkip + 1)} more)`;
+                        }
+                    }
 
                     input.value = '';
                 } catch (err) {
