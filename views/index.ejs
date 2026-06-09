@@ -74,10 +74,50 @@
             
             <p class="view-all" style="text-align: center; margin-bottom: 1rem; display: block;">Curated Instagram Feeds</p>
             
-            <div style="width: 100%; overflow: hidden; box-sizing: border-box; border-radius: 8px;">
+            <div id="ig-feed-container" style="width: 100%; overflow: hidden; box-sizing: border-box; border-radius: 8px;">
                 <script src="https://elfsightcdn.com/platform.js" async></script>
-                <div class="elfsight-app-f38add33-8906-49b0-adfa-86302258a886" data-elfsight-app-lazy></div>
+                <!-- Primary Widget -->
+                <div id="primary-ig-widget" class="elfsight-app-f38add33-8906-49b0-adfa-86302258a886" data-elfsight-app-lazy></div>
             </div>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    const primaryWidget = document.getElementById('primary-ig-widget');
+                    const container = document.getElementById('ig-feed-container');
+                    const primaryId = 'f38add33-8906-49b0-adfa-86302258a886';
+
+                    if (primaryWidget && container) {
+                        function activateFallback() {
+                            if (!document.querySelector('.elfsight-app-c9c88c39-66b2-46b2-b78e-13a124b14f7a')) {
+                                primaryWidget.style.display = 'none';
+                                
+                                // Inject fallback widget
+                                const fallbackWidget = document.createElement('div');
+                                fallbackWidget.className = 'elfsight-app-c9c88c39-66b2-46b2-b78e-13a124b14f7a';
+                                fallbackWidget.setAttribute('data-elfsight-app-lazy', '');
+                                container.appendChild(fallbackWidget);
+                            }
+                        }
+
+                        // Intercept console.error as Elfsight logs initialization failures there
+                        const originalConsoleError = console.error;
+                        console.error = function(...args) {
+                            const message = args.map(String).join(' ');
+                            if (message.includes('APP_VIEWS_LIMIT_REACHED') && message.includes(primaryId)) {
+                                activateFallback();
+                            }
+                            originalConsoleError.apply(console, args);
+                        };
+                        
+                        // Catch globally thrown errors just in case Elfsight throws an actual exception
+                        window.addEventListener('error', function(event) {
+                            if (event.message && event.message.includes('APP_VIEWS_LIMIT_REACHED') && event.message.includes(primaryId)) {
+                                activateFallback();
+                            }
+                        });
+                    }
+                });
+            </script>
         </section>
 
         <section class="community-section section-target" data-theme="#88D49E">
