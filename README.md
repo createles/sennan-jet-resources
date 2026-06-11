@@ -30,10 +30,24 @@ A full-stack web application designed as a centralized hub for Japan Exchange an
 | <img src="./assets/marketplace-section.gif" width="100%" alt="Desktop Portal Interface"> | <img src="./assets/marketplace-section-mobile.gif" width="240px" alt="Mobile Portal Interface"> |
 
 * **Dynamic User Dashboard:** A secure dashboard to manage active listings, update profiles, and track reservations.
+
+| Desktop View | Mobile Layout |
+| :---: | :---: |
+| <img src="./assets/dashboard-section.gif" width="100%" alt="Desktop Portal Interface"> | <img src="./assets/dashboard-section-mobile.gif" width="240px" alt="Mobile Portal Interface"> |
+
 * **Public Community Board:** A live board allowing members to seamlessly drop public announcements, updates, or messages viewable to all visitors.
+
+| Desktop View | Mobile Layout |
+| :---: | :---: |
+| <img src="./assets/resources-section.gif" width="100%" alt="Desktop Portal Interface"> | <img src="./assets/resources-section-mobile.gif" width="240px" alt="Mobile Portal Interface"> |
+
 * **Robust User Authentication:** Secure credential-based login and session management to protect community data.
 * **Optimized Media Pipeline:** An efficient image processing pipeline that compresses user-uploaded images on the fly before cloud storage.
 * **Live Social Feed:** Integrated, live-updating embeds capturing Sennan City's Instagram updates and local happenings.
+
+| Desktop View | Mobile Layout |
+| :---: | :---: |
+| <img src="./assets/instagram-feed.gif" width="100%" alt="Desktop Portal Interface"> | <img src="./assets/instagram-feed-mobile.gif" width="240px" alt="Mobile Portal Interface"> |
 
 ---
 
