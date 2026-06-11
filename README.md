@@ -24,6 +24,11 @@ A full-stack web application designed as a centralized hub for Japan Exchange an
 ## 🚀 Features
 
 * **Community Marketplace:** A dedicated buy/sell ecosystem allowing members to list items or reserve items for purchase.
+
+| Desktop View | Mobile Layout |
+| :---: | :---: |
+| <img src="./assets/marketplace-section.gif" width="100%" alt="Desktop Portal Interface"> | <img src="./assets/marketplace-section-mobile.gif" width="240px" alt="Mobile Portal Interface"> |
+
 * **Dynamic User Dashboard:** A secure dashboard to manage active listings, update profiles, and track reservations.
 * **Public Community Board:** A live board allowing members to seamlessly drop public announcements, updates, or messages viewable to all visitors.
 * **Robust User Authentication:** Secure credential-based login and session management to protect community data.
