@@ -22,7 +22,7 @@ A full-stack web application designed as a centralized hub for Japan Exchange an
 
 | Desktop View | Mobile Layout |
 | :---: | :---: |
-| <img src="./assets/herobanner-section.png?raw=true" width="100%" alt="Desktop Portal Interface"> | <img src="./assets/herobanner-section-mobile.png?raw=true" width="240px" alt="Mobile Portal Interface"> |
+| <img src="https://raw.githubusercontent.com/createles/sennan-jet-resources/main/assets/herobanner-section.png" width="100%" alt="Desktop Portal Interface"> | <img src="https://raw.githubusercontent.com/createles/sennan-jet-resources/main/assets/herobanner-section-mobile.png" width="240px" alt="Mobile Portal Interface"> |
 
 ---
 
@@ -36,7 +36,7 @@ A dedicated buy/sell ecosystem allowing members to list items or reserve items f
 
 | Desktop View | Mobile Layout |
 | :---: | :---: |
-| <img src="./assets/marketplace-section.gif?raw=true" width="100%" alt="Community Marketplace Desktop View"> | <img src="./assets/marketplace-section-mobile.gif?raw=true" width="240px" alt="Community Marketplace Mobile View"> |
+| <img src="https://raw.githubusercontent.com/createles/sennan-jet-resources/main/assets/marketplace-section.gif" width="100%" alt="Community Marketplace Desktop View"> | <img src="https://raw.githubusercontent.com/createles/sennan-jet-resources/main/assets/marketplace-section-mobile.gif" width="240px" alt="Community Marketplace Mobile View"> |
 
 </details>
 
@@ -48,7 +48,7 @@ A secure dashboard to manage active listings, update profiles, and track reserva
 
 | Desktop View | Mobile Layout |
 | :---: | :---: |
-| <img src="./assets/dashboard-section.gif?raw=true" width="100%" alt="User Dashboard Desktop View"> | <img src="./assets/dashboard-section-mobile.gif?raw=true" width="240px" alt="User Dashboard Mobile View"> |
+| <img src="https://raw.githubusercontent.com/createles/sennan-jet-resources/main/assets/dashboard-section.gif" width="100%" alt="User Dashboard Desktop View"> | <img src="https://raw.githubusercontent.com/createles/sennan-jet-resources/main/assets/dashboard-section-mobile.gif" width="240px" alt="User Dashboard Mobile View"> |
 
 </details>
 
@@ -60,7 +60,7 @@ Embedded Sennan City JETs infobook alongside city related links and updates, and
 
 | Desktop View | Mobile Layout |
 | :---: | :---: |
-| <img src="./assets/resources-section.gif?raw=true" width="100%" alt="Community Board Desktop View"> | <img src="./assets/resources-section-mobile.gif?raw=true" width="240px" alt="Community Board Mobile View"> |
+| <img src="https://raw.githubusercontent.com/createles/sennan-jet-resources/main/assets/resources-section.gif" width="100%" alt="Community Board Desktop View"> | <img src="https://raw.githubusercontent.com/createles/sennan-jet-resources/main/assets/resources-section-mobile.gif" width="240px" alt="Community Board Mobile View"> |
 
 </details>
 
@@ -76,7 +76,7 @@ Integrated, live-updating embeds capturing Sennan City's Instagram updates and l
 
 | Desktop View | Mobile Layout |
 | :---: | :---: |
-| <img src="./assets/instagram-feed.gif?raw=true" width="100%" alt="Instagram Feed Desktop View"> | <img src="./assets/instagram-feed-mobile.gif?raw=true" width="240px" alt="Instagram Feed Mobile View"> |
+| <img src="https://raw.githubusercontent.com/createles/sennan-jet-resources/main/assets/instagram-feed.gif" width="100%" alt="Instagram Feed Desktop View"> | <img src="https://raw.githubusercontent.com/createles/sennan-jet-resources/main/assets/instagram-feed-mobile.gif" width="240px" alt="Instagram Feed Mobile View"> |
 
 </details>
 
