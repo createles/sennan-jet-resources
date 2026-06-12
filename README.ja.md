@@ -22,7 +22,7 @@
 
 | デスクトップ表示 (Desktop) | モバイルレイアウト (Mobile) |
 | :---: | :---: |
-| <img src="./assets/herobanner-section.png" width="100%" alt="デスクトップ版 画面プレビュー"> | <img src="./assets/herobanner-section-mobile.png" width="240px" alt="モバイル版 画面プレビュー"> |
+| <img src="./assets/herobanner-section.png?raw=true" width="100%" alt="デスクトップ版 画面プレビュー"> | <img src="./assets/herobanner-section-mobile.png?raw=true" width="240px" alt="モバイル版 画面プレビュー"> |
 
 ---
 
@@ -36,7 +36,7 @@
 
 | デスクトップ表示 (Desktop) | モバイルレイアウト (Mobile) |
 | :---: | :---: |
-| <img src="./assets/marketplace-section.png" width="100%" alt="マーケットプレイス デスクトップ版"> | <img src="./assets/marketplace-section-mobile.png" width="240px" alt="マーケットプレイス モバイル版"> |
+| <img src="./assets/marketplace-section.png?raw=true" width="100%" alt="マーケットプレイス デスクトップ版"> | <img src="./assets/marketplace-section-mobile.png?raw=true" width="240px" alt="マーケットプレイス モバイル版"> |
 
 </details>
 
@@ -48,7 +48,7 @@
 
 | デスクトップ表示 (Desktop) | モバイルレイアウト (Mobile) |
 | :---: | :---: |
-| <img src="./assets/dashboard-section.png" width="100%" alt="ユーザーダッシュボード デスクトップ版"> | <img src="./assets/dashboard-section-mobile.png" width="240px" alt="ユーザーダッシュボード モバイル版"> |
+| <img src="./assets/dashboard-section.png?raw=true" width="100%" alt="ユーザーダッシュボード デスクトップ版"> | <img src="./assets/dashboard-section-mobile.png?raw=true" width="240px" alt="ユーザーダッシュボード モバイル版"> |
 
 </details>
 
@@ -60,7 +60,7 @@
 
 | デスクトップ表示 (Desktop) | モバイルレイアウト (Mobile) |
 | :---: | :---: |
-| <img src="./assets/resources-section.gif" width="100%" alt="コミュニティ掲示板 デスクトップ版"> | <img src="./assets/resources-section-mobile.gif" width="240px" alt="コミュニティ掲示板 モバイル版"> |
+| <img src="./assets/resources-section.gif?raw=true" width="100%" alt="コミュニティ掲示板 デスクトップ版"> | <img src="./assets/resources-section-mobile.gif?raw=true" width="240px" alt="コミュニティ掲示板 モバイル版"> |
 
 </details>
 
@@ -76,7 +76,7 @@
 
 | デスクトップ表示 (Desktop) | モバイルレイアウト (Mobile) |
 | :---: | :---: |
-| <img src="./assets/instagram-feed.gif" width="100%" alt="Instagramフィード デスクトップ版"> | <img src="./assets/instagram-feed-mobile.gif" width="240px" alt="Instagramフィード モバイル版"> |
+| <img src="./assets/instagram-feed.gif?raw=true" width="100%" alt="Instagramフィード デスクトップ版"> | <img src="./assets/instagram-feed-mobile.gif?raw=true" width="240px" alt="Instagramフィード モバイル版"> |
 
 </details>
 
