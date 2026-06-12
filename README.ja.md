@@ -36,7 +36,7 @@
 
 | デスクトップ表示 (Desktop) | モバイルレイアウト (Mobile) |
 | :---: | :---: |
-| <img src="https://raw.githubusercontent.com/createles/sennan-jet-resources/main/assets/marketplace-section.png" width="100%" alt="マーケットプレイス デスクトップ版"> | <img src="https://raw.githubusercontent.com/createles/sennan-jet-resources/main/assets/marketplace-section-mobile.png" width="240px" alt="マーケットプレイス モバイル版"> |
+| <img src="https://raw.githubusercontent.com/createles/sennan-jet-resources/main/assets/marketplace-section.gif" width="100%" alt="マーケットプレイス デスクトップ版"> | <img src="https://raw.githubusercontent.com/createles/sennan-jet-resources/main/assets/marketplace-section-mobile.gif" width="240px" alt="マーケットプレイス モバイル版"> |
 
 </details>
 
@@ -48,7 +48,7 @@
 
 | デスクトップ表示 (Desktop) | モバイルレイアウト (Mobile) |
 | :---: | :---: |
-| <img src="https://raw.githubusercontent.com/createles/sennan-jet-resources/main/assets/dashboard-section.png" width="100%" alt="ユーザーダッシュボード デスクトップ版"> | <img src="https://raw.githubusercontent.com/createles/sennan-jet-resources/main/assets/dashboard-section-mobile.png" width="240px" alt="ユーザーダッシュボード モバイル版"> |
+| <img src="https://raw.githubusercontent.com/createles/sennan-jet-resources/main/assets/dashboard-section.gif" width="100%" alt="ユーザーダッシュボード デスクトップ版"> | <img src="https://raw.githubusercontent.com/createles/sennan-jet-resources/main/assets/dashboard-section-mobile.gif" width="240px" alt="ユーザーダッシュボード モバイル版"> |
 
 </details>
 
