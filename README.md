@@ -13,6 +13,11 @@ A full-stack web application designed as a centralized hub for Japan Exchange an
 
 ---
 
+## 🛠️ Tech Stack
+**Frontend:** HTML5, CSS3, JavaScript (ES6+), EJS &nbsp;|&nbsp; **Backend:** Node.js, Express &nbsp;|&nbsp; **Database & ORM:** PostgreSQL, Prisma &nbsp;|&nbsp; **Storage & Hosting:** Supabase Storage, Railway
+
+---
+
 ## 📱 Interface Preview
 
 | Desktop View | Mobile Layout |
@@ -26,23 +31,38 @@ A full-stack web application designed as a centralized hub for Japan Exchange an
 ### 🛒 Community Marketplace
 A dedicated buy/sell ecosystem allowing members to list items or reserve items for purchase.
 
+<details>
+  <summary><b>📸 View Interface</b></summary>
+
 | Desktop View | Mobile Layout |
 | :---: | :---: |
 | <img src="./assets/marketplace-section.gif" width="100%" alt="Community Marketplace Desktop View"> | <img src="./assets/marketplace-section-mobile.gif" width="240px" alt="Community Marketplace Mobile View"> |
 
+</details>
+
 ### 🔐 Dynamic User Dashboard
 A secure dashboard to manage active listings, update profiles, and track reservations.
+
+<details>
+  <summary><b>📸 View Interface</b></summary>
 
 | Desktop View | Mobile Layout |
 | :---: | :---: |
 | <img src="./assets/dashboard-section.gif" width="100%" alt="User Dashboard Desktop View"> | <img src="./assets/dashboard-section-mobile.gif" width="240px" alt="User Dashboard Mobile View"> |
 
-### 📢 Public Community Board
-A live board allowing members to seamlessly drop public announcements, updates, or messages viewable to all visitors.
+</details>
+
+### 📢 Resource Links & Public Community Board
+Embedded Sennan City JETs infobook alongside city related links and updates, and a live board allowing members to seamlessly drop public announcements, updates, or messages viewable to all visitors.
+
+<details>
+  <summary><b>📸 View Interface</b></summary>
 
 | Desktop View | Mobile Layout |
 | :---: | :---: |
 | <img src="./assets/resources-section.gif" width="100%" alt="Community Board Desktop View"> | <img src="./assets/resources-section-mobile.gif" width="240px" alt="Community Board Mobile View"> |
+
+</details>
 
 ### ⚡ Core Infrastructure
 * **Robust User Authentication:** Secure credential-based login and session management to protect community data.
@@ -51,18 +71,14 @@ A live board allowing members to seamlessly drop public announcements, updates, 
 ### 📱 Live Social Feed
 Integrated, live-updating embeds capturing Sennan City's Instagram updates and local happenings.
 
+<details>
+  <summary><b>📸 View Interface</b></summary>
+
 | Desktop View | Mobile Layout |
 | :---: | :---: |
 | <img src="./assets/instagram-feed.gif" width="100%" alt="Instagram Feed Desktop View"> | <img src="./assets/instagram-feed-mobile.gif" width="240px" alt="Instagram Feed Mobile View"> |
 
----
-
-## 🛠️ Tech Stack
-
-* **Frontend:** HTML5, CSS3, JavaScript (ES6+), EJS (Embedded JavaScript templates)
-* **Backend:** Node.js, Express
-* **Database & ORM:** PostgreSQL, Prisma ORM
-* **Storage & Hosting:** Supabase Storage, Railway
+</details>
 
 ---
 

@@ -13,7 +13,12 @@
 
 ---
 
-## 📱 インタフェースプレビュー
+## 🛠️ 技術スタック (Tech Stack)
+**フロントエンド:** HTML5, CSS3, JavaScript (ES6+), EJS &nbsp;|&nbsp; **バックエンド:** Node.js, Express &nbsp;|&nbsp; **データベース & ORM:** PostgreSQL, Prisma &nbsp;|&nbsp; **ストレージ & ホスティング:** Supabase Storage, Railway
+
+---
+
+##  インタフェースプレビュー
 
 | デスクトップ表示 (Desktop) | モバイルレイアウト (Mobile) |
 | :---: | :---: |
@@ -26,23 +31,38 @@
 ### 🛒 コミュニティマーケットプレイス
 不用品の出品や、購入希望商品の予約がシームレスに行えるJETメンバー専用の売買エコシステム。
 
+<details>
+  <summary><b>📸 インタフェースを表示</b></summary>
+
 | デスクトップ表示 (Desktop) | モバイルレイアウト (Mobile) |
 | :---: | :---: |
 | <img src="./assets/marketplace-section.png" width="100%" alt="マーケットプレイス デスクトップ版"> | <img src="./assets/marketplace-section-mobile.png" width="240px" alt="マーケットプレイス モバイル版"> |
 
+</details>
+
 ### 🔐 動的なユーザーダッシュボード
 出品中のアイテムの編集・削除、プロフィール更新、予約ステータスの追跡ができる安全な個別管理画面。
+
+<details>
+  <summary><b>📸 インタフェースを表示</b></summary>
 
 | デスクトップ表示 (Desktop) | モバイルレイアウト (Mobile) |
 | :---: | :---: |
 | <img src="./assets/dashboard-section.png" width="100%" alt="ユーザーダッシュボード デスクトップ版"> | <img src="./assets/dashboard-section-mobile.png" width="240px" alt="ユーザーダッシュボード モバイル版"> |
 
-### 📢 公開コミュニティ掲示板
-訪問者全員がリアルタイムで閲覧・共有できる、全体向けの告知やメッセージを気軽に投稿できるオープンな掲示板。
+</details>
+
+### 📢 リソースリンク & 公開コミュニティ掲示板
+泉南市JETインフォブックや市関連のリンク・更新情報に加え、訪問者全員がリアルタイムで閲覧・共有できる、全体向けの告知やメッセージを気軽に投稿できるオープンな掲示板。
+
+<details>
+  <summary><b>📸 インタフェースを表示</b></summary>
 
 | デスクトップ表示 (Desktop) | モバイルレイアウト (Mobile) |
 | :---: | :---: |
 | <img src="./assets/resources-section.gif" width="100%" alt="コミュニティ掲示板 デスクトップ版"> | <img src="./assets/resources-section-mobile.gif" width="240px" alt="コミュニティ掲示板 モバイル版"> |
+
+</details>
 
 ### ⚡ コアインフラストラクチャ
 * **堅牢なユーザー認証:** コミュニティ内のデータとプライバシーを保護するための、安全な資格情報ベースのログインおよびセッション管理。
@@ -51,18 +71,14 @@
 ### 📱 ライブSNSフィード
 泉南市の公式Instagramのアップデートや地域の出来事をシームレスにキャッチする、リアルタイム更新の埋め込みフィード。
 
+<details>
+  <summary><b>📸 インタフェースを表示</b></summary>
+
 | デスクトップ表示 (Desktop) | モバイルレイアウト (Mobile) |
 | :---: | :---: |
 | <img src="./assets/instagram-feed.gif" width="100%" alt="Instagramフィード デスクトップ版"> | <img src="./assets/instagram-feed-mobile.gif" width="240px" alt="Instagramフィード モバイル版"> |
 
----
-
-## 🛠️ 技術スタック (Tech Stack)
-
-* **フロントエンド:** HTML5, CSS3, JavaScript (ES6+), EJS (Embedded JavaScript templates)
-* **バックエンド:** Node.js, Express
-* **データベース & ORM:** PostgreSQL, Prisma ORM
-* **ストレージ & ホスティング:** Supabase Storage, Railway
+</details>
 
 ---
 
