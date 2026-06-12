@@ -23,31 +23,37 @@ A full-stack web application designed as a centralized hub for Japan Exchange an
 
 ## 🚀 Features
 
-* **Community Marketplace:** A dedicated buy/sell ecosystem allowing members to list items or reserve items for purchase.
+### 🛒 Community Marketplace
+A dedicated buy/sell ecosystem allowing members to list items or reserve items for purchase.
 
 | Desktop View | Mobile Layout |
 | :---: | :---: |
-| <img src="./assets/marketplace-section.gif" width="100%" alt="Desktop Portal Interface"> | <img src="./assets/marketplace-section-mobile.gif" width="240px" alt="Mobile Portal Interface"> |
+| <img src="./assets/marketplace-section.gif" width="100%" alt="Community Marketplace Desktop View"> | <img src="./assets/marketplace-section-mobile.gif" width="240px" alt="Community Marketplace Mobile View"> |
 
-* **Dynamic User Dashboard:** A secure dashboard to manage active listings, update profiles, and track reservations.
-
-| Desktop View | Mobile Layout |
-| :---: | :---: |
-| <img src="./assets/dashboard-section.gif" width="100%" alt="Desktop Portal Interface"> | <img src="./assets/dashboard-section-mobile.gif" width="240px" alt="Mobile Portal Interface"> |
-
-* **Public Community Board:** A live board allowing members to seamlessly drop public announcements, updates, or messages viewable to all visitors.
+### 🔐 Dynamic User Dashboard
+A secure dashboard to manage active listings, update profiles, and track reservations.
 
 | Desktop View | Mobile Layout |
 | :---: | :---: |
-| <img src="./assets/resources-section.gif" width="100%" alt="Desktop Portal Interface"> | <img src="./assets/resources-section-mobile.gif" width="240px" alt="Mobile Portal Interface"> |
+| <img src="./assets/dashboard-section.gif" width="100%" alt="User Dashboard Desktop View"> | <img src="./assets/dashboard-section-mobile.gif" width="240px" alt="User Dashboard Mobile View"> |
 
+### 📢 Public Community Board
+A live board allowing members to seamlessly drop public announcements, updates, or messages viewable to all visitors.
+
+| Desktop View | Mobile Layout |
+| :---: | :---: |
+| <img src="./assets/resources-section.gif" width="100%" alt="Community Board Desktop View"> | <img src="./assets/resources-section-mobile.gif" width="240px" alt="Community Board Mobile View"> |
+
+### ⚡ Core Infrastructure
 * **Robust User Authentication:** Secure credential-based login and session management to protect community data.
 * **Optimized Media Pipeline:** An efficient image processing pipeline that compresses user-uploaded images on the fly before cloud storage.
-* **Live Social Feed:** Integrated, live-updating embeds capturing Sennan City's Instagram updates and local happenings.
+
+### 📱 Live Social Feed
+Integrated, live-updating embeds capturing Sennan City's Instagram updates and local happenings.
 
 | Desktop View | Mobile Layout |
 | :---: | :---: |
-| <img src="./assets/instagram-feed.gif" width="100%" alt="Desktop Portal Interface"> | <img src="./assets/instagram-feed-mobile.gif" width="240px" alt="Mobile Portal Interface"> |
+| <img src="./assets/instagram-feed.gif" width="100%" alt="Instagram Feed Desktop View"> | <img src="./assets/instagram-feed-mobile.gif" width="240px" alt="Instagram Feed Mobile View"> |
 
 ---
 

@@ -23,31 +23,37 @@
 
 ## 🚀 主な機能 (Features)
 
-* **コミュニティマーケットプレイス:** 不用品の出品や、購入希望商品の予約がシームレスに行えるJETメンバー専用の売買エコシステム。
+### 🛒 コミュニティマーケットプレイス
+不用品の出品や、購入希望商品の予約がシームレスに行えるJETメンバー専用の売買エコシステム。
 
 | デスクトップ表示 (Desktop) | モバイルレイアウト (Mobile) |
 | :---: | :---: |
-| <img src="./assets/marketplace-section.png" width="100%" alt="デスクトップ版 画面プレビュー"> | <img src="./assets/marketplace-section-mobile.png" width="240px" alt="モバイル版 画面プレビュー"> |
+| <img src="./assets/marketplace-section.png" width="100%" alt="マーケットプレイス デスクトップ版"> | <img src="./assets/marketplace-section-mobile.png" width="240px" alt="マーケットプレイス モバイル版"> |
 
-* **動的なユーザーダッシュボード:** 出品中のアイテムの編集・削除、プロフィール更新、予約ステータスの追跡ができる安全な個別管理画面。
-
-| デスクトップ表示 (Desktop) | モバイルレイアウト (Mobile) |
-| :---: | :---: |
-| <img src="./assets/dashboard-section.png" width="100%" alt="デスクトップ版 画面プレビュー"> | <img src="./assets/dashboard-section-mobile.png" width="240px" alt="モバイル版 画面プレビュー"> |
-
-* **公開コミュニティ掲示板:** 訪問者全員がリアルタイムで閲覧・共有できる、全体向けの告知やメッセージを気軽に投稿できるオープンな掲示板。
+### 🔐 動的なユーザーダッシュボード
+出品中のアイテムの編集・削除、プロフィール更新、予約ステータスの追跡ができる安全な個別管理画面。
 
 | デスクトップ表示 (Desktop) | モバイルレイアウト (Mobile) |
 | :---: | :---: |
-| <img src="./assets/resources-section.gif" width="100%" alt="デスクトップ版 画面プレビュー"> | <img src="./assets/resources-section-mobile.gif" width="240px" alt="モバイル版 画面プレビュー"> |
+| <img src="./assets/dashboard-section.png" width="100%" alt="ユーザーダッシュボード デスクトップ版"> | <img src="./assets/dashboard-section-mobile.png" width="240px" alt="ユーザーダッシュボード モバイル版"> |
 
+### 📢 公開コミュニティ掲示板
+訪問者全員がリアルタイムで閲覧・共有できる、全体向けの告知やメッセージを気軽に投稿できるオープンな掲示板。
+
+| デスクトップ表示 (Desktop) | モバイルレイアウト (Mobile) |
+| :---: | :---: |
+| <img src="./assets/resources-section.gif" width="100%" alt="コミュニティ掲示板 デスクトップ版"> | <img src="./assets/resources-section-mobile.gif" width="240px" alt="コミュニティ掲示板 モバイル版"> |
+
+### ⚡ コアインフラストラクチャ
 * **堅牢なユーザー認証:** コミュニティ内のデータとプライバシーを保護するための、安全な資格情報ベースのログインおよびセッション管理。
 * **最適化されたメディアパイプライン:** ユーザーがアップロードした画像を、クラウドストレージに転送する前にサーバー側で即座に圧縮・リサイズする効率的な処理機構。
-* **ライブSNSフィード:** 泉南市の公式Instagramのアップデートや地域の出来事をシームレスにキャッチする、リアルタイム更新の埋め込みフィード。
+
+### 📱 ライブSNSフィード
+泉南市の公式Instagramのアップデートや地域の出来事をシームレスにキャッチする、リアルタイム更新の埋め込みフィード。
 
 | デスクトップ表示 (Desktop) | モバイルレイアウト (Mobile) |
 | :---: | :---: |
-| <img src="./assets/instagram-feed.gif" width="100%" alt="デスクトップ版 画面プレビュー"> | <img src="./assets/instagram-feed-mobile.gif" width="240px" alt="モバイル版 画面プレビュー"> |
+| <img src="./assets/instagram-feed.gif" width="100%" alt="Instagramフィード デスクトップ版"> | <img src="./assets/instagram-feed-mobile.gif" width="240px" alt="Instagramフィード モバイル版"> |
 
 ---
 
