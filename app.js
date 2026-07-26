@@ -5,6 +5,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import session from 'express-session';
 import flash from 'connect-flash';
+import { prisma } from './lib/prisma.js';
 import authRouter from './routes/authRouter.js';
 import itemRouter from './routes/itemRouter.js';
 import dashboardRouter from './routes/dashboardRouter.js';
@@ -38,12 +39,37 @@ app.use(session({
 // Connect-Flash Middleware
 app.use(flash());
 
-// Expose flash messages to views
-app.use((req, res, next) => {
+// Expose flash messages & user notifications to views
+app.use(async (req, res, next) => {
   const success_msg = req.flash('success_msg');
   const error_msg = req.flash('error_msg');
   res.locals.success_msg = success_msg.length > 0 ? success_msg[0] : null;
   res.locals.error_msg = error_msg.length > 0 ? error_msg[0] : null;
+
+  res.locals.user = req.session.userId || null;
+  res.locals.userName = req.session.userName || null;
+  res.locals.fullName = req.session.fullName || null;
+  res.locals.unreadCount = 0;
+  res.locals.recentNotifications = [];
+
+  if (req.session.userId) {
+    try {
+      const [unreadCount, recentNotifications] = await Promise.all([
+        prisma.notification.count({
+          where: { userId: req.session.userId, isRead: false }
+        }),
+        prisma.notification.findMany({
+          where: { userId: req.session.userId },
+          orderBy: { createdAt: 'desc' },
+          take: 10
+        })
+      ]);
+      res.locals.unreadCount = unreadCount;
+      res.locals.recentNotifications = recentNotifications;
+    } catch (error) {
+      console.error("Error loading notifications in middleware:", error);
+    }
+  }
   next();
 });
 

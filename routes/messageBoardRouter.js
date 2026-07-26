@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { prisma } from '../lib/prisma.js';
 import { authenticateUser } from '../middleware/authMiddleware.js';
+import { notifyAllUsersExcept } from '../lib/notifications.js';
 
 const messageBoardRouter = Router();
 
@@ -37,8 +38,21 @@ messageBoardRouter.post('/api/post', authenticateUser, async (req, res) => {
       data: { content: req.body.content, userId: req.session.userId },
       include: { user: { select: { name: true } }, comments: true }
     });
+
+    // Notify all registered users about the new community board post
+    const authorName = post.user ? post.user.name : 'A member';
+    const excerpt = req.body.content.length > 50 ? req.body.content.substring(0, 50) + '...' : req.body.content;
+
+    await notifyAllUsersExcept({
+      excludeUserId: req.session.userId,
+      type: 'NEW_COMMUNITY_POST',
+      message: `${authorName} posted on the Community Board: "${excerpt}"`,
+      link: '/#community-board'
+    });
+
     res.json(post);
   } catch (error) {
+    console.error("Error creating post:", error);
     res.status(500).json({ error: 'Failed to create post' });
   }
 });

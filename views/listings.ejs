@@ -58,7 +58,8 @@
 
     @media (min-width: 768px) {
         .marketplace-layout { flex-direction: row; align-items: flex-start; gap: 3rem; }
-        .sidebar { flex-direction: column; width: 240px; position: sticky; top: 100px; white-space: normal; flex-shrink: 0; scrollbar-width: none; }
+        .sidebar-container { width: 240px !important; position: sticky; top: 100px; flex-shrink: 0; }
+        .sidebar { flex-direction: column; width: 100%; white-space: normal; scrollbar-width: none; }
         .sidebar::-webkit-scrollbar { display: none; } /* hide scrollbar on desktop */
         .sidebar h3 { display: block; }
         .sidebar a { border-color: transparent; }
@@ -86,15 +87,24 @@
         </div>
 
         <div class="marketplace-layout">
-            <aside class="sidebar glass-panel">
-                <h3>Filter Directory</h3>
-                <a href="/listings" class="<%= typeof currentCategory != 'undefined' && currentCategory === 'ALL' ? 'active' : '' %>">All Resources</a>
-                <a href="/listings?category=KITCHEN" class="<%= typeof currentCategory != 'undefined' && currentCategory === 'KITCHEN' ? 'active' : '' %>">Kitchen</a>
-                <a href="/listings?category=FURNITURE" class="<%= typeof currentCategory != 'undefined' && currentCategory === 'FURNITURE' ? 'active' : '' %>">Furniture</a>
-                <a href="/listings?category=APPLIANCES" class="<%= typeof currentCategory != 'undefined' && currentCategory === 'APPLIANCES' ? 'active' : '' %>">Appliances</a>
-                <a href="/listings?category=CLOTHING" class="<%= typeof currentCategory != 'undefined' && currentCategory === 'CLOTHING' ? 'active' : '' %>">Clothing</a>
-                <a href="/listings?category=OTHERS" class="<%= typeof currentCategory != 'undefined' && currentCategory === 'OTHERS' ? 'active' : '' %>">Others</a>
-            </aside>
+            <div class="sidebar-container" style="display: flex; flex-direction: column; gap: 1rem; width: 100%;">
+                <form action="/listings" method="GET" style="margin: 0; width: 100%;">
+                    <% if (typeof currentCategory !== 'undefined' && currentCategory !== 'ALL') { %>
+                        <input type="hidden" name="category" value="<%= currentCategory %>">
+                    <% } %>
+                    <input type="text" name="search" value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>" placeholder="Search items by keyword..." style="width: 100%; padding: 12px 16px; border: 1px solid var(--border-color); border-radius: 8px; font-family: var(--font-body); font-size: 0.9rem; background: rgba(255, 255, 255, 0.95); box-sizing: border-box; shadow: 0 2px 8px rgba(0,0,0,0.03);">
+                </form>
+
+                <aside class="sidebar glass-panel">
+                    <h3>Filter Directory</h3>
+                    <a href="/listings<%= typeof searchQuery !== 'undefined' && searchQuery ? '?search=' + encodeURIComponent(searchQuery) : '' %>" class="<%= typeof currentCategory != 'undefined' && currentCategory === 'ALL' ? 'active' : '' %>">All Resources</a>
+                    <a href="/listings?category=KITCHEN<%= typeof searchQuery !== 'undefined' && searchQuery ? '&search=' + encodeURIComponent(searchQuery) : '' %>" class="<%= typeof currentCategory != 'undefined' && currentCategory === 'KITCHEN' ? 'active' : '' %>">Kitchen</a>
+                    <a href="/listings?category=FURNITURE<%= typeof searchQuery !== 'undefined' && searchQuery ? '&search=' + encodeURIComponent(searchQuery) : '' %>" class="<%= typeof currentCategory != 'undefined' && currentCategory === 'FURNITURE' ? 'active' : '' %>">Furniture</a>
+                    <a href="/listings?category=APPLIANCES<%= typeof searchQuery !== 'undefined' && searchQuery ? '&search=' + encodeURIComponent(searchQuery) : '' %>" class="<%= typeof currentCategory != 'undefined' && currentCategory === 'APPLIANCES' ? 'active' : '' %>">Appliances</a>
+                    <a href="/listings?category=CLOTHING<%= typeof searchQuery !== 'undefined' && searchQuery ? '&search=' + encodeURIComponent(searchQuery) : '' %>" class="<%= typeof currentCategory != 'undefined' && currentCategory === 'CLOTHING' ? 'active' : '' %>">Clothing</a>
+                    <a href="/listings?category=OTHERS<%= typeof searchQuery !== 'undefined' && searchQuery ? '&search=' + encodeURIComponent(searchQuery) : '' %>" class="<%= typeof currentCategory != 'undefined' && currentCategory === 'OTHERS' ? 'active' : '' %>">Others</a>
+                </aside>
+            </div>
 
             <main class="grid">
                 <% if (typeof items != 'undefined' && items.length > 0) { %>

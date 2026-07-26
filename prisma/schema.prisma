@@ -10,33 +10,36 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String   @db.VarChar(255)
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  items     Item[]
-  posts Post[]
-  comments Comment[]
+  id            String         @id @default(uuid())
+  email         String         @unique
+  password      String         @db.VarChar(255)
+  name          String
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  items         Item[]         @relation("SellerItems")
+  reservedItems Item[]         @relation("BuyerReservedItems")
+  posts         Post[]
+  comments      Comment[]
+  notifications Notification[]
 }
 
 model Item {
-  id           String      @id @default(uuid())
-  title        String
-  description  String      @db.Text
-  notes        String?
+  id            String      @id @default(uuid())
+  title         String
+  description   String      @db.Text
+  notes         String?
   originalPrice Float?
-  price        Float
-  category     Category
-  images       String[]
-  status       ItemStatus  @default(AVAILABLE)
-  reserveeId   String?
-  userId       String
-  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-  contactInfo  String?     
+  price         Float
+  category      Category
+  images        String[]
+  status        ItemStatus  @default(AVAILABLE)
+  reserveeId    String?
+  reservee      User?       @relation("BuyerReservedItems", fields: [reserveeId], references: [id], onDelete: SetNull)
+  userId        String
+  user          User        @relation("SellerItems", fields: [userId], references: [id], onDelete: Cascade)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  contactInfo   String?     
 }
 
 model Post {
@@ -53,10 +56,21 @@ model Comment {
   id        String   @id @default(uuid())
   content   String   @db.Text
   createdAt DateTime @default(now())
-  postId String
-  post   Post  @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String
+  message   String
+  link      String?
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
 }
 
 enum Category {

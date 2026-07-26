@@ -2,20 +2,18 @@
 import { Router } from 'express';
 import { prisma } from '../lib/prisma.js'; 
 import { authenticateUser } from '../middleware/authMiddleware.js';
+import { createNotification } from '../lib/notifications.js';
 
 const itemRouter = Router();
 
-// Get all listings with optional category filter
+// Get all listings with optional category & search filter
 itemRouter.get('/', async (req, res) => {
-  const { category } = req.query;
+  const { category, search } = req.query;
   
-  // Build query options
   const queryOptions = {
-    // Include both AVAILABLE and RESERVED items
     where: { 
         status: { in: ['AVAILABLE', 'RESERVED'] } 
     }, 
-    // Sort alphabetically by status (A before R), then by newest
     orderBy: [
         { status: 'asc' }, 
         { createdAt: 'desc' }
@@ -27,6 +25,13 @@ itemRouter.get('/', async (req, res) => {
     queryOptions.where.category = category.toUpperCase();
   }
 
+  if (search && search.trim() !== '') {
+    queryOptions.where.OR = [
+      { title: { contains: search.trim(), mode: 'insensitive' } },
+      { description: { contains: search.trim(), mode: 'insensitive' } }
+    ];
+  }
+
   try {
     const items = await prisma.item.findMany(queryOptions);
     const user = req.session.userId ? req.session.userId : null;
@@ -35,6 +40,7 @@ itemRouter.get('/', async (req, res) => {
         title: 'Marketplace Listings | Sennan City JETs', 
         items, 
         currentCategory: category || 'ALL',
+        searchQuery: search || '',
         user,
         userName: req.session.userName || null
     });
@@ -49,10 +55,11 @@ itemRouter.post('/:id/reserve', authenticateUser, async (req, res) => {
     try {
         const itemId = req.params.id;
         const userId = req.session.userId;
+        const buyerName = req.session.fullName || req.session.userName || 'A user';
 
-        // Verify the item is currently available
         const item = await prisma.item.findUnique({
-            where: { id: itemId }
+            where: { id: itemId },
+            include: { user: { select: { id: true, name: true } } }
         });
 
         if (!item) {
@@ -65,19 +72,33 @@ itemRouter.post('/:id/reserve', authenticateUser, async (req, res) => {
             return res.redirect('/listings');
         }
 
-        // Prevent sellers from reserving their own items
         if (item.userId === userId) {
             req.flash('error_msg', 'You cannot reserve your own item');
             return res.redirect('/listings');
         }
 
-        // Update item with reserveeId and status
         await prisma.item.update({
             where: { id: itemId },
             data: {
                 status: 'RESERVED',
                 reserveeId: userId
             }
+        });
+
+        // Notify Seller
+        await createNotification({
+            userId: item.userId,
+            type: 'ITEM_RESERVED',
+            message: `${buyerName} reserved your item "${item.title}".`,
+            link: '/dashboard'
+        });
+
+        // Notify Buyer Confirmation
+        await createNotification({
+            userId: userId,
+            type: 'ITEM_RESERVED_CONFIRMATION',
+            message: `You reserved "${item.title}" from ${item.user ? item.user.name : 'seller'}.`,
+            link: '/dashboard'
         });
 
         req.flash('success_msg', 'Item reserved successfully!');
@@ -94,9 +115,11 @@ itemRouter.post('/:id/unreserve', authenticateUser, async (req, res) => {
     try {
         const itemId = req.params.id;
         const userId = req.session.userId;
+        const buyerName = req.session.fullName || req.session.userName || 'The reservee';
 
         const item = await prisma.item.findUnique({
-            where: { id: itemId }
+            where: { id: itemId },
+            include: { user: { select: { id: true, name: true } } }
         });
 
         if (!item) {
@@ -104,19 +127,33 @@ itemRouter.post('/:id/unreserve', authenticateUser, async (req, res) => {
             return res.redirect('/listings');
         }
 
-        // Verify that the person attempting to unreserve is the actual reservee
         if (item.reserveeId !== userId) {
             req.flash('error_msg', 'You are not authorized to unreserve this item');
             return res.redirect('/listings');
         }
 
-        // Clear reservation details
         await prisma.item.update({
             where: { id: itemId },
             data: {
                 status: 'AVAILABLE',
                 reserveeId: null
             }
+        });
+
+        // Notify Seller
+        await createNotification({
+            userId: item.userId,
+            type: 'ITEM_UNRESERVED',
+            message: `${buyerName} cancelled their reservation for "${item.title}".`,
+            link: '/dashboard'
+        });
+
+        // Notify Buyer
+        await createNotification({
+            userId: userId,
+            type: 'ITEM_UNRESERVED_CONFIRMATION',
+            message: `You cancelled your reservation for "${item.title}".`,
+            link: '/listings'
         });
 
         req.flash('success_msg', 'Reservation cancelled successfully!');
@@ -127,4 +164,5 @@ itemRouter.post('/:id/unreserve', authenticateUser, async (req, res) => {
         res.redirect('/listings');
     }
 });
+
 export default itemRouter;
