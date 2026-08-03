@@ -306,21 +306,34 @@
             if (!document.querySelector('.modal-content').contains(event.target)) closeModal();
         }
 
-        function changeImage(direction, event) {
-            event.stopPropagation();
-            
+        function goToImage(targetIndex) {
+            if (targetIndex < 0 || targetIndex >= currentImages.length) return;
+
             const modalImageElement = document.getElementById('modalImage');
             modalImageElement.classList.add('fade');
             
             setTimeout(() => {
-                currentImageIndex += direction;
-                if (currentImageIndex < 0) currentImageIndex = 0;
-                if (currentImageIndex >= currentImages.length) currentImageIndex = currentImages.length - 1;
-                
-                modalImageElement.src = currentImages[currentImageIndex];
-                updateCarouselUI();
-                modalImageElement.classList.remove('fade');
+                currentImageIndex = targetIndex;
+                const nextSrc = currentImages[currentImageIndex];
+
+                const tempImg = new Image();
+                const reveal = (src) => {
+                    modalImageElement.src = src;
+                    updateCarouselUI();
+                    requestAnimationFrame(() => {
+                        modalImageElement.classList.remove('fade');
+                    });
+                };
+
+                tempImg.onload = () => reveal(nextSrc);
+                tempImg.onerror = () => reveal(fallbackSVG);
+                tempImg.src = nextSrc;
             }, 300); // 300ms matches the CSS transition duration
+        }
+
+        function changeImage(direction, event) {
+            if (event) event.stopPropagation();
+            goToImage(currentImageIndex + direction);
         }
         
         function updateCarouselUI() {
@@ -338,14 +351,7 @@
                     dot.className = `carousel-indicator ${idx === currentImageIndex ? 'active' : ''}`;
                     dot.onclick = (e) => {
                         e.stopPropagation();
-                        const modalImageElement = document.getElementById('modalImage');
-                        modalImageElement.classList.add('fade');
-                        setTimeout(() => {
-                            currentImageIndex = idx;
-                            modalImageElement.src = currentImages[currentImageIndex];
-                            updateCarouselUI();
-                            modalImageElement.classList.remove('fade');
-                        }, 300);
+                        goToImage(idx);
                     };
                     indicatorsContainer.appendChild(dot);
                 });
