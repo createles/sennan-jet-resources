@@ -229,7 +229,29 @@ function toggleNotifPane(event) {
     event.stopPropagation();
     const pane = document.getElementById('notifPane');
     if (pane) {
-        pane.classList.toggle('active');
+      if (!pane.classList.contains('active')) {
+          // Mark all notifications as read when opening the pane
+          markAllNotificationsRead();
+      }
+      
+      // Reset inline positioning styles before calculating layout
+      pane.style.left = '';
+      pane.style.right = '';
+
+      pane.classList.toggle('active');
+
+      if (pane.classList.contains('active')) {
+          const box = pane.getBoundingClientRect();
+          const margin = 10; // Margin in px from window's left edge
+
+          if (box.left < margin) {
+              const container = pane.closest('.notif-container');
+              const containerBox = container ? container.getBoundingClientRect() : { left: 0 };
+              
+              pane.style.right = 'auto';
+              pane.style.left = (margin - containerBox.left) + 'px';
+          }
+      }
     }
 }
 
